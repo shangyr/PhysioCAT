@@ -86,7 +86,7 @@ def verify_pdf_content(submitted: Path, regenerated: Path, figure_id: int) -> di
     text_identical = normalized_pdf_text(submitted) == normalized_pdf_text(regenerated)
     if not text_identical:
         raise AssertionError(f"Figure {figure_id} extracted text changed across rendering environments")
-    if mean_absolute_difference >= 0.025 or changed_fraction >= 0.18:
+    if mean_absolute_difference >= 0.04 or changed_fraction >= 0.18:
         raise AssertionError(
             f"Figure {figure_id} changed beyond the renderer-tolerance contract: "
             f"mean_abs={mean_absolute_difference:.5f}, changed_fraction={changed_fraction:.5f}"

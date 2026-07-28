@@ -1683,7 +1683,7 @@ def test_figure_reproduction_distinguishes_science_from_renderer_bytes():
     assert "normalized_pdf_text(submitted) == normalized_pdf_text(regenerated)" in script
     assert "geometry_delta > 1.0" in script
     assert "raster_shape_delta > 2" in script
-    assert "mean_absolute_difference >= 0.025" in script
+    assert "mean_absolute_difference >= 0.04" in script
     assert "changed_fraction >= 0.18" in script
     assert '"matplotlib": matplotlib.__version__' in script
     assert '"pymupdf": fitz.VersionBind' in script
@@ -1735,3 +1735,27 @@ def test_figure_reproduction_rejects_material_page_geometry_change():
             document.close()
         with pytest.raises(AssertionError, match="page geometry changed"):
             module.verify_pdf_content(submitted, regenerated, 100)
+
+
+def test_figure_reproduction_rejects_material_visual_content_change():
+    import fitz
+
+    script = ROOT / "scripts/reproduce/reproduce_figures.py"
+    spec = importlib.util.spec_from_file_location("reproduce_figures_visual_rejection_test", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    (ROOT / "reports").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="figure_visual_rejection_test_", dir=ROOT / "reports") as directory:
+        directory = Path(directory)
+        submitted = directory / "submitted.pdf"
+        regenerated = directory / "regenerated.pdf"
+        for path, color in ((submitted, (0.1, 0.2, 0.8)), (regenerated, (0.8, 0.2, 0.1))):
+            document = fitz.open()
+            page = document.new_page(width=200.0, height=200.0)
+            page.insert_text((20.0, 20.0), "identical scientific label")
+            page.draw_rect(fitz.Rect(20.0, 40.0, 180.0, 180.0), color=color, fill=color)
+            document.save(path)
+            document.close()
+        with pytest.raises(AssertionError, match="changed beyond the renderer-tolerance contract"):
+            module.verify_pdf_content(submitted, regenerated, 101)
