@@ -1506,12 +1506,15 @@ def test_hash_inventory_excludes_git_repository_metadata():
         (temporary_root / ".git/objects").mkdir(parents=True)
         (temporary_root / ".git/config").write_text("repository metadata", encoding="utf-8")
         (temporary_root / ".git/objects/object").write_bytes(b"git object")
+        (temporary_root / "reports").mkdir()
+        (temporary_root / "reports/diagnostics.txt").write_text("runtime output", encoding="utf-8")
         (temporary_root / "kept.txt").write_text("scientific artifact", encoding="utf-8")
         output, count = module.build_inventory(temporary_root)
         inventory = output.read_text(encoding="utf-8")
         assert count == 1
         assert inventory.endswith("  kept.txt\n")
         assert ".git/" not in inventory
+        assert "reports/" not in inventory
 
 
 def test_retention_sensitivity_and_sqi_reference_validation_are_released():
@@ -1679,6 +1682,7 @@ def test_figure4_has_a_complete_reproducible_source_contract():
 
 def test_figure_reproduction_distinguishes_science_from_renderer_bytes():
     script = (ROOT / "scripts/reproduce/reproduce_figures.py").read_text(encoding="utf-8")
+    figure_7_renderer = (ROOT / "scripts/reproduce/render_figure_7.py").read_text(encoding="utf-8")
     assert '"scientific-content contract"' in script
     assert "normalized_pdf_text(submitted) == normalized_pdf_text(regenerated)" in script
     assert "geometry_delta > 1.0" in script
@@ -1687,6 +1691,8 @@ def test_figure_reproduction_distinguishes_science_from_renderer_bytes():
     assert "changed_fraction >= 0.18" in script
     assert '"matplotlib": matplotlib.__version__' in script
     assert '"pymupdf": fitz.VersionBind' in script
+    assert '"font.family": "DejaVu Sans"' in figure_7_renderer
+    assert "Arial" not in figure_7_renderer
 
 
 def test_figure_reproduction_tolerates_subpoint_renderer_geometry_drift():

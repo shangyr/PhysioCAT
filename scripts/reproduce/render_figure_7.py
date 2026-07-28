@@ -240,7 +240,7 @@ def main() -> None:
     PNG = args.png
     plt.rcParams.update(
         {
-            "font.family": ["Arial", "DejaVu Sans", "sans-serif"],
+            "font.family": "DejaVu Sans",
             "axes.titlesize": 10,
             "axes.labelsize": 9,
             "savefig.bbox": "tight",

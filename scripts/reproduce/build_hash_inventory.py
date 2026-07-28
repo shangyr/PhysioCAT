@@ -25,7 +25,7 @@ def build_inventory(root: Path = ROOT):
     paths = []
     for path in root.rglob("*"):
         relative = path.relative_to(root)
-        if not path.is_file() or path == output or any(part in excluded_parts for part in relative.parts) or relative.parts[:2] == ("reports", "reproduced"):
+        if not path.is_file() or path == output or any(part in excluded_parts for part in relative.parts) or relative.parts[:1] == ("reports",):
             continue
         paths.append(path)
     lines = [f"{digest(path)}  {str(path.relative_to(root)).replace(chr(92), '/')}" for path in sorted(paths)]
