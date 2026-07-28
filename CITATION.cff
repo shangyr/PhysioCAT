@@ -2,7 +2,7 @@ cff-version: 1.2.0
 title: "PhysioCAT: physiological delay-banded cross-attention for subject-independent cuffless blood pressure estimation from ECG and PPG"
 message: "Please cite the associated manuscript and this software release."
 type: software
-version: 1.1.0
+version: 1.0.0
 date-released: 2026-07-29
 license: BSD-3-Clause
 repository-code: "https://github.com/shangyr/PhysioCAT"

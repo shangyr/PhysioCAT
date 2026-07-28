@@ -8,6 +8,8 @@
 **Physiological delay-banded cross-attention for subject-independent cuffless
 blood pressure estimation from ECG and PPG**
 
+Youren Shang · Ningyuan Zhang (corresponding author) · Harbin Institute of Technology
+
 PhysioCAT is a physiology-guided multimodal neural network that restricts
 direct ECG--PPG attention to the ECG-leading 120--450 ms pulse-arrival
 envelope. Reciprocal attention scores are aligned on the same physiological
@@ -25,7 +27,12 @@ signal quality before temporal aggregation.
 
 *PhysioCAT architecture. Click the image for the submitted vector figure.*
 
-## Why PhysioCAT
+## Core idea
+
+Unconstrained fusion asks a finite dataset to rediscover both *which* ECG--PPG
+timing relationships are physiologically admissible and *how strongly* each
+admissible pair should interact. PhysioCAT fixes the first question as a
+literature-guided structural prior and leaves the second learnable.
 
 - **Physiology as an inductive bias.** ECG electrical activation is constrained
   to lead peripheral PPG pulse arrival; the model does not spend capacity on
@@ -180,14 +187,22 @@ If this repository supports your work, please cite the associated manuscript
 and the software release described in [`CITATION.cff`](CITATION.cff). GitHub's
 **Cite this repository** menu exports the software citation metadata.
 
+## Funding and acknowledgments
+
+This work was supported in part by the National Natural Science Foundation of
+China [grant number 72125001]. The authors thank Professor Xitong Guo for
+providing the research environment and institutional support in which this work
+was conducted. The funding source had no role in the study design, analysis,
+interpretation, manuscript preparation, or decision to submit the work for
+publication.
+
 ## License and immutable snapshot
 
 Code is released under the [BSD 3-Clause License](LICENSE). Dataset access and
 use remain governed by the original data providers.
 
 The final submission state is fixed by the immutable annotated tag
-[`bspc-submission-v2`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v2)
+[`bspc-submission-v1`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v1)
 and its GitHub
-[Release](https://github.com/shangyr/PhysioCAT/releases/tag/bspc-submission-v2).
-The earlier `bspc-submission-v1` snapshot remains permanently available and is
-not moved. See [`VERSIONING.md`](VERSIONING.md).
+[Release](https://github.com/shangyr/PhysioCAT/releases/tag/bspc-submission-v1).
+See [`VERSIONING.md`](VERSIONING.md).

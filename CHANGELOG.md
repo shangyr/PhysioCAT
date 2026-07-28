@@ -1,8 +1,9 @@
 # Changelog
 
-## 1.1.0 - 2026-07-29
+## 1.0.0 - 2026-07-29
 
-- redesigned the project homepage around the PhysioCAT algorithm, architecture,
+- first formal manuscript-associated public release;
+- algorithm-first project homepage centered on the PhysioCAT hypothesis, architecture,
   primary results, and direct usage paths;
 - added publication-quality README views of the submitted architecture and
   subject-grouped result figures with explicit vector-source provenance;
@@ -11,11 +12,7 @@
   scientific documentation without removing any safeguards;
 - normalized the repository license to the complete canonical BSD 3-Clause
   text for unambiguous machine-readable identification;
-- established the immutable `bspc-submission-v2` final submission snapshot.
-
-## 1.0.0 - 2026-07-28
-
-- initial manuscript-associated public reproducibility release;
+- established the immutable `bspc-submission-v1` final submission snapshot;
 - complete five-fold subject-grouped prediction and training lineage;
 - source-to-target transfer, structured mechanism controls, and statistical
   verification;

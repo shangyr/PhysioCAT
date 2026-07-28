@@ -28,9 +28,8 @@ All 50 reported configurations use the same complete five-fold subject-grouped O
 ## Review and archival identity
 
 The final submission state is identified by the immutable annotated tag
-`bspc-submission-v2` and its commit SHA. The earlier
-`bspc-submission-v1` snapshot is retained unchanged. Corrections are assigned a
-new tag; reviewed tags are never moved or replaced. See
+`bspc-submission-v1` and its commit SHA. Corrections are assigned a new tag;
+reviewed tags are never moved or replaced. See
 [`VERSIONING.md`](../VERSIONING.md) for the complete archival policy and
 [`REVIEWER_GUIDE.md`](../REVIEWER_GUIDE.md) for claim-oriented inspection
 routes.

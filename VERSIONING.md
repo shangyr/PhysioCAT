@@ -1,12 +1,9 @@
 # Versioning and archival policy
 
 [`main`](https://github.com/shangyr/PhysioCAT) is the maintained branch. The
-final manuscript-submission state is fixed by the immutable annotated tag
-[`bspc-submission-v2`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v2)
-and its commit SHA. The initial public artifact remains fixed by the earlier
-immutable annotated tag
+state accompanying the initial manuscript submission is fixed by the immutable annotated tag
 [`bspc-submission-v1`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v1)
-and its commit SHA. Neither tag is moved, replaced, or deleted.
+and its commit SHA recorded in the manuscript-management system.
 
 If a correction is required during peer review, it is committed normally,
 validated by the complete reproduction workflow, and assigned a new immutable

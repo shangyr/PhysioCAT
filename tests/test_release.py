@@ -545,15 +545,26 @@ def test_release_metadata_uses_current_version():
     citation_text = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
     citation = yaml.safe_load(citation_text)
     manifest = json.loads((ROOT / "REPOSITORY_MANIFEST.json").read_text(encoding="utf-8"))
-    assert 'version = "1.1.0"' in pyproject
-    assert '__version__ = "1.1.0"' in package_init
-    assert str(defaults["version"]) == "1.1.0"
-    assert "version: 1.1.0" in citation_text
-    assert str(citation["version"]) == "1.1.0"
+    assert 'version = "1.0.0"' in pyproject
+    assert '__version__ = "1.0.0"' in package_init
+    assert str(defaults["version"]) == "1.0.0"
+    assert "version: 1.0.0" in citation_text
+    assert str(citation["version"]) == "1.0.0"
     assert str(citation["date-released"]) == "2026-07-29"
     assert citation["authors"][1]["email"] == "25b910030@stu.hit.edu.cn"
-    assert manifest["artifact_version"] == "1.1.0"
-    assert manifest["review_snapshot_tag"] == "bspc-submission-v2"
+    assert manifest["artifact_version"] == "1.0.0"
+    assert manifest["review_snapshot_tag"] == "bspc-submission-v1"
+
+
+def test_funding_and_non_author_pi_boundaries_are_explicit():
+    manuscript = (ROOT / "paper/PhysioCAT_Manuscript.tex").read_text(encoding="utf-8")
+    assert "National Natural Science Foundation of China [grant number 72125001]" in manuscript
+    assert "The funding source had no role in the study design" in manuscript
+    assert "decision to submit the article for publication" in manuscript
+    assert "did not receive any specific grant" not in manuscript
+    assert "Professor Xitong Guo" in manuscript
+    assert manuscript.count("Xitong Guo") == 1
+    assert r"\author{Xitong Guo" not in manuscript
 
 
 def test_released_checkpoint_demo_replays_prediction_authority():
