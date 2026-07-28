@@ -59,6 +59,7 @@ def verify_pdf_content(submitted: Path, regenerated: Path, figure_id: int) -> di
         row.update(
             {
                 "page_geometry_max_delta_points": 0.0,
+                "raster_shape_max_delta_pixels": 0,
                 "visual_mean_absolute_difference": 0.0,
                 "visual_changed_pixel_fraction": 0.0,
                 "text_tokens_identical": True,
@@ -69,11 +70,16 @@ def verify_pdf_content(submitted: Path, regenerated: Path, figure_id: int) -> di
     expected, expected_size = rendered_rgb(submitted)
     observed, observed_size = rendered_rgb(regenerated)
     geometry_delta = max(abs(a - b) for a, b in zip(expected_size, observed_size, strict=True))
-    if geometry_delta > 0.25 or expected.shape != observed.shape:
+    raster_shape_delta = max(abs(a - b) for a, b in zip(expected.shape, observed.shape, strict=True))
+    if geometry_delta > 1.0 or raster_shape_delta > 2 or expected.shape[2] != observed.shape[2]:
         raise AssertionError(
             f"Figure {figure_id} page geometry changed: {expected_size}/{expected.shape} vs "
             f"{observed_size}/{observed.shape}"
         )
+    comparison_height = min(expected.shape[0], observed.shape[0])
+    comparison_width = min(expected.shape[1], observed.shape[1])
+    expected = expected[:comparison_height, :comparison_width]
+    observed = observed[:comparison_height, :comparison_width]
     difference = np.abs(expected.astype(np.int16) - observed.astype(np.int16))
     mean_absolute_difference = float(difference.mean() / 255.0)
     changed_fraction = float((difference.max(axis=2) > 24).mean())
@@ -88,6 +94,7 @@ def verify_pdf_content(submitted: Path, regenerated: Path, figure_id: int) -> di
     row.update(
         {
             "page_geometry_max_delta_points": geometry_delta,
+            "raster_shape_max_delta_pixels": raster_shape_delta,
             "visual_mean_absolute_difference": mean_absolute_difference,
             "visual_changed_pixel_fraction": changed_fraction,
             "text_tokens_identical": text_identical,

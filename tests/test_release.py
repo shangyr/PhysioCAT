@@ -8,6 +8,7 @@ import zipfile
 
 import numpy as np
 import pandas as pd
+import pytest
 import torch
 import yaml
 
@@ -1680,8 +1681,57 @@ def test_figure_reproduction_distinguishes_science_from_renderer_bytes():
     script = (ROOT / "scripts/reproduce/reproduce_figures.py").read_text(encoding="utf-8")
     assert '"scientific-content contract"' in script
     assert "normalized_pdf_text(submitted) == normalized_pdf_text(regenerated)" in script
-    assert "geometry_delta > 0.25" in script
+    assert "geometry_delta > 1.0" in script
+    assert "raster_shape_delta > 2" in script
     assert "mean_absolute_difference >= 0.025" in script
     assert "changed_fraction >= 0.18" in script
     assert '"matplotlib": matplotlib.__version__' in script
     assert '"pymupdf": fitz.VersionBind' in script
+
+
+def test_figure_reproduction_tolerates_subpoint_renderer_geometry_drift():
+    import fitz
+
+    script = ROOT / "scripts/reproduce/reproduce_figures.py"
+    spec = importlib.util.spec_from_file_location("reproduce_figures_test", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    (ROOT / "reports").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="figure_geometry_test_", dir=ROOT / "reports") as directory:
+        directory = Path(directory)
+        submitted = directory / "submitted.pdf"
+        regenerated = directory / "regenerated.pdf"
+        for path, height in ((submitted, 200.0), (regenerated, 200.5)):
+            document = fitz.open()
+            page = document.new_page(width=200.0, height=height)
+            page.insert_text((20.0, 20.0), "identical scientific label")
+            document.save(path)
+            document.close()
+        result = module.verify_pdf_content(submitted, regenerated, 99)
+        assert result["verification_mode"] == "scientific-content contract"
+        assert result["page_geometry_max_delta_points"] <= 1.0
+        assert result["raster_shape_max_delta_pixels"] <= 2
+
+
+def test_figure_reproduction_rejects_material_page_geometry_change():
+    import fitz
+
+    script = ROOT / "scripts/reproduce/reproduce_figures.py"
+    spec = importlib.util.spec_from_file_location("reproduce_figures_rejection_test", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    (ROOT / "reports").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="figure_geometry_rejection_test_", dir=ROOT / "reports") as directory:
+        directory = Path(directory)
+        submitted = directory / "submitted.pdf"
+        regenerated = directory / "regenerated.pdf"
+        for path, height in ((submitted, 200.0), (regenerated, 202.0)):
+            document = fitz.open()
+            page = document.new_page(width=200.0, height=height)
+            page.insert_text((20.0, 20.0), "identical scientific label")
+            document.save(path)
+            document.close()
+        with pytest.raises(AssertionError, match="page geometry changed"):
+            module.verify_pdf_content(submitted, regenerated, 100)
