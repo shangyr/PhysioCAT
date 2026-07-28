@@ -1,5 +1,9 @@
 # Reviewer guide
 
+The complete data, model, protocol, and release boundaries are recorded in
+[`docs/SCIENTIFIC_CONTRACT.md`](docs/SCIENTIFIC_CONTRACT.md). This guide is the
+short claim-oriented index into that evidence.
+
 Run the complete audit with:
 
 ```bash
@@ -25,7 +29,7 @@ The main inspection routes are:
 | Statistics | `artifacts/metrics/statistics/`, `scripts/reproduce/reproduce_statistics.py` |
 | Pressure-range and residual structure | `artifacts/metrics/secondary/conditional_bp_performance.csv`, `calibration_diagnostics.csv`, `error_tail_composition.csv`, `artifacts/metrics/statistics/repeated_measures_agreement.csv` |
 | MIMIC target-protocol identity | `artifacts/cohorts/mimic_ecosystem_identity_audit.csv`, `scripts/data/canonicalize_candidate_lineage.py`, `artifacts/metrics/secondary/mimic_bp_protocol_audit.csv`, `artifacts/protocol/external_prediction_manifest.csv`; both protocols use the shared `mimic-iii` hash namespace |
-| Submitted text and figures | `paper/`, `scripts/reproduce/render_figure_5.py`, `render_figure_6.py`, `render_figure_7.py` |
+| Submitted text and figures | `paper/`, `assets/`, `scripts/reproduce/render_figure_5.py`, `render_figure_6.py`, `render_figure_7.py` |
 | Exact validated environment | `requirements/requirements-lock.txt` |
 
 The reviewer package uses one complete five-fold subject-grouped OOF evidence chain for all 50 reported configurations. The formal ledger contains 250 fits, including 100 fits for 20 independently trained degree-preserving random-rewiring topologies; the stability ledger contains 40 additional fits from two extra seeds for four mechanism-relevant models. Each random graph preserves both endpoint degree vectors and the reverse branch is its transpose. `design_parameter_provenance.csv` separates design-fixed choices from a common three-candidate neural training-setting grid, and `fold_local_training_setting_selection.csv` verifies that selection used only each fold's validation subjects. A separate source-model ledger contains nine source-training runs (three models by three seeds), with the primary-seed checkpoints released and every seed bound to source-validation and zero-shot target predictions. Both matched core checkpoints are released for every outer fold with complete validation-prediction shards, selected-to-stop histories, checkpoints, and executable replay tensors. `configuration_validation_test_summary.csv`, `core_validation_test_consistency.json`, and the compute summaries expose campaign-level validation/test and resource evidence directly. Phase-specific histories verify that contrastive and supervised optimization each starts with a fresh optimizer and warm-up schedule. Compact architecture fixtures remain separately scoped; the released training scripts expose the executable schedules and data routes for locally obtained source data.

@@ -1,11 +1,12 @@
 {
-  "artifact_version": "1.0.0",
+  "artifact_version": "1.1.0",
   "repository_role": "public_reproducibility_artifact",
   "repository_url": "https://github.com/shangyr/PhysioCAT",
   "github_single_file_limit_bytes": 104857600,
   "git_lfs_required": false,
-  "review_snapshot_tag": "bspc-submission-v1",
-  "review_snapshot_url": "https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v1",
+  "review_snapshot_tag": "bspc-submission-v2",
+  "review_snapshot_url": "https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v2",
   "review_snapshot_identity": "annotated tag plus immutable commit SHA",
+  "previous_review_snapshot_tag": "bspc-submission-v1",
   "archive_doi_policy": "create after acceptance"
 }

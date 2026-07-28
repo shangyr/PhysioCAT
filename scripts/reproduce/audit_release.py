@@ -17,7 +17,9 @@ def main():
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     required = [
-        "README.md", "REVIEWER_GUIDE.md",
+        "README.md", "REVIEWER_GUIDE.md", "docs/SCIENTIFIC_CONTRACT.md",
+        "assets/physiocat_architecture.png", "assets/subject_grouped_results.png",
+        "assets/README.md", "examples/released_checkpoint_demo.py",
         "requirements/requirements-lock.txt",
         "artifacts/predictions/pulsedb_vital_subject_grouped_oof_predictions.csv.gz",
         "artifacts/predictions/pulsedb_mimic_zero_shot_predictions.csv.gz",

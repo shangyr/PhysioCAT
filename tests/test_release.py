@@ -503,14 +503,17 @@ def test_dbp_evidence_hierarchy_is_coherent_without_rowwise_tuning():
 
 def test_reviewer_readme_states_the_aligned_target_boundary():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "offline label-agreement auditing" not in readme
-    assert "released scalar-label alignment" not in readme
-    assert "Source rows are enumerated before crop and target formation" in readme
-    assert "one source-listed segment can yield at most one deterministic centered 8-s crop" in readme
-    assert "same released `aligned_abp_scalar_targets`/`abp_beat_labels` path" in readme
-    assert "PulseDB scalar targets use ECG-detected cardiac boundaries" in readme
-    assert "Reference ABP is never a model or inference input" in readme
-    assert "label-source sensitivity analysis" in readme
+    contract = (ROOT / "docs/SCIENTIFIC_CONTRACT.md").read_text(encoding="utf-8")
+    assert "offline label-agreement auditing" not in readme + contract
+    assert "released scalar-label alignment" not in readme + contract
+    assert "Source rows are enumerated before crop and target formation" in contract
+    assert "one source-listed segment can yield at most one deterministic centered 8-s crop" in contract
+    assert "same released `aligned_abp_scalar_targets`/`abp_beat_labels` path" in contract
+    assert "PulseDB scalar targets use ECG-detected cardiac boundaries" in contract
+    assert "Reference ABP is never a model or inference input" in readme and contract
+    assert "label-source sensitivity analysis" in contract
+    assert "assets/physiocat_architecture.png" in readme
+    assert "assets/subject_grouped_results.png" in readme
 
 
 def test_manuscript_matches_edge_aligned_reciprocal_implementation():
@@ -537,18 +540,41 @@ def test_manuscript_matches_edge_aligned_reciprocal_implementation():
 
 def test_release_metadata_uses_current_version():
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "1.0.0"' in pyproject
-    citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
-    assert str(citation["version"]) == "1.0.0"
-    assert str(citation["date-released"]) == "2026-07-28"
+    package_init = (ROOT / "src/physiocat/__init__.py").read_text(encoding="utf-8")
+    defaults = yaml.safe_load((ROOT / "configs/defaults.yaml").read_text(encoding="utf-8"))
+    citation_text = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    citation = yaml.safe_load(citation_text)
+    manifest = json.loads((ROOT / "REPOSITORY_MANIFEST.json").read_text(encoding="utf-8"))
+    assert 'version = "1.1.0"' in pyproject
+    assert '__version__ = "1.1.0"' in package_init
+    assert str(defaults["version"]) == "1.1.0"
+    assert "version: 1.1.0" in citation_text
+    assert str(citation["version"]) == "1.1.0"
+    assert str(citation["date-released"]) == "2026-07-29"
     assert citation["authors"][1]["email"] == "25b910030@stu.hit.edu.cn"
+    assert manifest["artifact_version"] == "1.1.0"
+    assert manifest["review_snapshot_tag"] == "bspc-submission-v2"
+
+
+def test_released_checkpoint_demo_replays_prediction_authority():
+    script = ROOT / "examples/released_checkpoint_demo.py"
+    spec = importlib.util.spec_from_file_location("released_checkpoint_demo_test", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    report = module.run_demo()
+    assert report["status"] == "PASS"
+    assert report["windows"] == 8
+    assert report["output_shape"] == [8, 2]
+    assert report["max_abs_replay_delta"] <= 5e-5
 
 
 def test_readme_matches_the_released_normalization_contract():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "same deterministic whole-window robust-normalized ECG/PPG crop" in readme
-    assert "Patch-local normalization is retained only as a separately named sensitivity control" in readme
-    assert "normalized independently within each non-overlapping 64-ms analysis-grid patch" not in readme
+    contract = (ROOT / "docs/SCIENTIFIC_CONTRACT.md").read_text(encoding="utf-8")
+    assert "same deterministic whole-window robust-normalized ECG/PPG crop" in contract
+    assert "Patch-local normalization is retained only as a separately named sensitivity control" in contract
+    assert "normalized independently within each non-overlapping 64-ms analysis-grid patch" not in readme + contract
 
 
 def test_reviewer_guide_routes_existing_claim_boundary_and_hard_case_evidence():
@@ -902,8 +928,8 @@ def test_waveform_and_sqi_contexts_are_not_conflated():
         assert architecture["waveform_encoder_context_ms"] == 64
         assert architecture["sqi_reliability_context_ms"] == 1000
         assert "maximum_encoder_context_ms" not in architecture
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "64-ms" in readme and "1-s local analysis window" in readme
+    contract = (ROOT / "docs/SCIENTIFIC_CONTRACT.md").read_text(encoding="utf-8")
+    assert "64-ms" in contract and "1-s local analysis window" in contract
 
 
 def test_frozen_source_checkpoint_to_prediction_lineage_is_closed():

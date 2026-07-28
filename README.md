@@ -1,79 +1,193 @@
 # PhysioCAT
 
 [![Validation](https://github.com/shangyr/PhysioCAT/actions/workflows/validation.yml/badge.svg)](https://github.com/shangyr/PhysioCAT/actions/workflows/validation.yml)
-[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/shangyr/PhysioCAT?label=release)](https://github.com/shangyr/PhysioCAT/releases/latest)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg)](pyproject.toml)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
 
 **Physiological delay-banded cross-attention for subject-independent cuffless
 blood pressure estimation from ECG and PPG**
 
-PhysioCAT tests a specific modeling hypothesis: direct ECG–PPG fusion should
-respect the ECG-leading pulse-arrival relationship. It implements that
-hypothesis as a fixed delay-banded asymmetric cross-attention prior while
-retaining learnable within-band affinities and pairwise signal-quality
-weighting.
+PhysioCAT is a physiology-guided multimodal neural network that restricts
+direct ECG--PPG attention to the ECG-leading 120--450 ms pulse-arrival
+envelope. Reciprocal attention scores are aligned on the same physiological
+edges, learned within the admissible band, and weighted by pairwise local
+signal quality before temporal aggregation.
 
-This repository is the versioned reproducibility artifact for the associated
-*Biomedical Signal Processing and Control* manuscript. It contains fixed
-subject-disjoint folds, configurations, released predictions, selected
-checkpoints, source tables, submitted figure sources, and executable validation
-workflows.
+[Manuscript](paper/PhysioCAT_Manuscript.pdf) ·
+[Supplement](paper/PhysioCAT_Supplementary_Material.pdf) ·
+[Released checkpoint demo](#released-checkpoint-demo) ·
+[Reproduce the study](#reproduce-the-study) ·
+[Scientific contract](docs/SCIENTIFIC_CONTRACT.md) ·
+[Reviewer guide](REVIEWER_GUIDE.md)
 
-- [Submitted manuscript](paper/PhysioCAT_Manuscript.pdf)
-- [Supplementary material](paper/PhysioCAT_Supplementary_Material.pdf)
-- [Claim-oriented reviewer guide](REVIEWER_GUIDE.md)
-- [Versioning and archival policy](VERSIONING.md)
+[![PhysioCAT architecture](assets/physiocat_architecture.png)](paper/figures/Figure_2.pdf)
 
-## Scientific claim-to-evidence map
+*PhysioCAT architecture. Click the image for the submitted vector figure.*
 
-| Scientific question | Released evidence |
-|---|---|
-| Does subject overlap inflate apparent accuracy? | Subject-grouped and random-segment fold manifests, memberships, and predictions |
-| Is the gain due only to additional attention capacity? | Parameter-matched no-delay-band control on identical folds and inputs |
-| Is the gain due only to sparse connectivity? | Twenty independently trained degree-preserving random-rewiring topologies |
-| Does performance depend on ECG-leading timing? | Shifted, mirrored, local-mask, direction, and waveform-timing controls |
-| Does model ordering persist under source shift? | Frozen PulseDB-MIMIC and MIMIC-BP target protocols |
-| Can the reported results be checked independently? | Released predictions, selected checkpoints, source tables, hashes, replay fixtures, and executable audits |
+## Why PhysioCAT
 
-## Reviewed repository state
+- **Physiology as an inductive bias.** ECG electrical activation is constrained
+  to lead peripheral PPG pulse arrival; the model does not spend capacity on
+  temporally implausible cross-modal pairs.
+- **Edge-aligned reciprocal attention.** ECG-query/PPG-key and
+  PPG-query/ECG-key branches score the same admissible ECG-leading pair, and
+  their reciprocal affinity is fused once on that edge.
+- **Pairwise reliability.** Scale-invariant ECG and PPG SQI tokens jointly
+  weight each interaction, so a clean signal cannot conceal a corrupted
+  partner.
+- **Subject-independent evaluation.** The primary result uses fixed five-fold
+  subject-grouped out-of-fold testing; frozen source models are then evaluated
+  without target tuning on two patient-disjoint MIMIC-derived protocols.
 
-The manuscript-management record identifies the reviewed state by the
-immutable annotated tag [`bspc-submission-v1`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v1)
-and its commit SHA. The `main` branch remains maintainable; corrections are
-released under a new immutable revision tag rather than by moving an earlier
-tag. See `VERSIONING.md`.
+## Main results
+
+Results below are from retrospective public datasets. External rows use the
+frozen PulseDB-Vital source model with no target-cohort tuning.
+
+| Evaluation | Protocol | Windows / subjects | SBP MAE | DBP MAE |
+|---|---|---:|---:|---:|
+| **PhysioCAT, PulseDB-Vital** | 5-fold subject-grouped OOF | 186,252 / 2,714 | **4.26** | **3.11** |
+| Matched no-delay cross-attention | Same folds, inputs, and parameters | 186,252 / 2,714 | 5.25 | 3.51 |
+| **PhysioCAT, PulseDB-MIMIC** | Frozen zero-shot transfer | 164,882 / 2,201 | **4.95** | **3.52** |
+| **PhysioCAT, MIMIC-BP** | Frozen zero-shot transfer | 39,498 / 1,524 | **4.83** | **3.41** |
+
+All errors are in mmHg. Complete comparator results, uncertainty estimates,
+subject-level tests, agreement analyses, and mechanism controls are released
+under [`artifacts/metrics/`](artifacts/metrics/).
+
+[![Subject-grouped results](assets/subject_grouped_results.png)](paper/figures/Figure_3.pdf)
+
+*Primary subject-grouped performance and agreement. Click for the submitted
+vector figure.*
+
+## What is released
+
+- the complete PhysioCAT implementation and matched neural/classical controls;
+- fixed configurations, subject-disjoint folds, and executable data adapters;
+- complete prediction authorities for every reported result;
+- selected outer-fold and frozen source-model checkpoints with audit tensors;
+- training histories, run ledgers, statistical outputs, source tables, and
+  figure-reproduction code;
+- a deterministic SHA-256 inventory and continuous Linux validation.
+
+The release therefore supports three levels of use: inspect the algorithm,
+execute a released checkpoint immediately, or reconstruct the full reported
+evidence chain.
 
 ## Quick start
 
 ```bash
+git clone https://github.com/shangyr/PhysioCAT.git
+cd PhysioCAT
 python -m pip install -r requirements/requirements-lock.txt
+python -m pip install -e . --no-deps
+```
+
+The lock file records the exact direct dependency versions used in clean-room
+validation. Python 3.10 or newer is supported; CI validates the release on
+Python 3.11/Linux.
+
+## Released checkpoint demo
+
+Run the frozen PhysioCAT source checkpoint on its eight self-contained audit
+windows:
+
+```bash
+python examples/released_checkpoint_demo.py
+```
+
+The command writes nothing. It loads the released deterministic checkpoint,
+runs ECG/PPG/SQI inference, compares the outputs with the archived prediction
+authority, and prints the maximum absolute replay difference. The audit
+windows are an integrity fixture, not a performance benchmark.
+
+For a legally obtained and prepared target cohort, use
+[`scripts/train/predict_source_model.py`](scripts/train/predict_source_model.py).
+Its input contract is 8-s ECG and PPG windows sampled at 250 Hz, represented as
+`[batch, 1, 2000]`, with local SQI tokens shaped `[batch, 2, 125]`.
+
+## Reproduce the study
+
+Run the complete reviewer-facing workflow:
+
+```bash
 python scripts/reproduce/reproduce_all.py
 python -m pytest -q tests
 ```
 
-Outputs are written to `reports/reproduced/`; reference artifacts are not modified.
+The workflow recomputes released tables, statistics, secondary analyses,
+attention summaries, submitted figures, checkpoint replays, training-lineage
+audits, and package hashes. Outputs are written to `reports/reproduced/`;
+reference artifacts are never modified.
 
-`requirements/requirements-lock.txt` records the exact direct dependency versions used for the final clean-room validation. `requirements/reviewer.txt` remains available as a compatible-version installation option.
+Useful focused entry points are:
 
-## Data and protocol
+| Goal | Command |
+|---|---|
+| Main and external tables | `python scripts/reproduce/reproduce_main_tables.py` |
+| Submitted figures | `python scripts/reproduce/reproduce_figures.py` |
+| Checkpoint and training lineage | `python scripts/reproduce/verify_training_lineage.py` |
+| Subject/fold integrity | `python scripts/reproduce/verify_fold_membership.py` |
+| Statistical analyses | `python scripts/reproduce/reproduce_statistics.py` |
 
-- Raw PulseDB and MIMIC-BP waveforms are not redistributed. Dataset adapters and export scripts operate on legally obtained local copies.
-- PulseDB adapters resolve official `Subj_Wins` layouts and prefer paired unfiltered `ECG_Record/PPG_Record` fields, falling back to `ECG_Raw/PPG_Raw` when record fields are unavailable. The exact selected aliases are written to every export manifest. Zero-phase filtering and wavelet denoising belong only to the beat-detection/SQI analysis branch; model inputs use the same paired crop without that transform and then undergo the declared deterministic normalization. The fallback is valid for this pipeline because both the model transform and PPG SQI are invariant to affine amplitude remapping.
-- Source rows are enumerated before crop and target formation. `data/retention/*_raw_candidate_manifest.csv.gz` records crop/target failures and maps every successful source segment one-to-one to a target-formed `window_id`; one source-listed segment can yield at most one deterministic centered 8-s crop. PulseDB scalar targets use ECG-detected cardiac boundaries and the mean accepted beat maxima/minima from synchronized reference ABP in that crop after finite/order checks and a within-window midpoint/pulse-pressure MAD rule. Dataset export and label auditing call the same released `aligned_abp_scalar_targets`/`abp_beat_labels` path. MIMIC-BP uses its paired curated scalar. Subsequent retention does not use a separate ABP waveform-quality score. Reference ABP is never a model or inference input; its continuous SQI is released only for label-source sensitivity analysis.
-- Post-target retention uses adult metadata, finite ordered scalar targets, cardiac-cycle count, ECG/PPG quality, common paired-sample continuity, the joint SQI rule, and the fixed PulseDB-Vital 96-window cap. It does not select external test windows by a narrow SBP/DBP outcome range. PAT is computed after retention and is never an inclusion rule.
-- PulseDB-Vital is evaluated by a fixed seed-42 five-fold subject-grouped out-of-fold protocol. Every subject is tested exactly once; each fold uses 271 disjoint validation subjects and the remaining subjects for training. PulseDB-MIMIC and MIMIC-BP are patient-disjoint zero-shot target protocols curated within the same MIMIC-III waveform ecosystem and are not presented as independent clinical sites. The released candidate-lineage canonicalizer hashes both protocols in the same `mimic-iii` identity namespace, so zero overlap is an actual cross-protocol audit rather than a dataset-prefix artifact.
-- Source models use one fixed 2,442/272 train/validation partition before external inference; the primary tables use seed 42 and source-training stability repeats seeds 1337 and 2025 without target tuning.
-- The protocol-sensitivity control uses a fixed seed-42 five-fold random-segment out-of-fold schedule. Complete per-window fold membership and the executable role materializer are included.
-- `artifacts/provenance/dataset_field_and_label_contract.csv` records the selected ECG/PPG fields, aligned target policy, and the strict boundary between reference-target derivation and model inputs for each cohort.
-- `artifacts/cohorts/target_formation_selection_audit.csv` compares target-formed and target-formation-failure paired crops before ECG/PPG retention. `repository_scalar_sensitivity.csv` and `abp_reference_quality_sensitivity.csv` re-score the same OOF predictions against alternative target or reference-quality views. All are recomputed by the public secondary-analysis workflow.
-- `artifacts/quality/sqi_validation_annotations.csv.gz`, `artifacts/quality/abp_reference_quality_annotations.csv.gz`, and the corresponding validation summaries provide blinded input-waveform and reference-waveform quality checks used in the Supplement.
+## Repository map
 
-## Model contract
+```text
+PhysioCAT/
+├── src/physiocat/          model, preprocessing, training, metrics
+├── configs/                fixed data, model, training, evaluation settings
+├── scripts/data/           adapters for legally obtained source datasets
+├── scripts/train/          subject-grouped and source-model workflows
+├── scripts/reproduce/      tables, figures, statistics, and audits
+├── artifacts/              predictions, checkpoints, metrics, provenance
+├── data/                   fixed folds, manifests, retention, small fixtures
+├── paper/                  submitted manuscript, supplement, vector figures
+└── tests/                  implementation and release-contract verification
+```
 
-PhysioCAT, its matched mechanism controls, the neural comparators, and the classical comparators all receive the same deterministic whole-window robust-normalized ECG/PPG crop; this transform fits no subject- or cohort-level statistics. PhysioCAT then projects each non-overlapping 64-ms waveform patch through a stride-matched local convolution and token-wise residual MLP, so no cross-patch waveform context is introduced by the waveform encoder before direct cross-modal exchange. Patch-local normalization is retained only as a separately named sensitivity control. Token SQI reliability is computed from a centered 1-s local analysis window and enters only as an edge-reliability cue; it does not extend the waveform encoder. The literature-guided fixed 120--450 ms prior is implemented with support-conservative offsets 3--6 (analysis-grid patch support 132--444 ms). ECG-query/PPG-key and PPG-query/ECG-key assignments score the same admissible edge; their geometric-mean reciprocal affinity is normalized once for the ECG-anchored pair representation. Edge reliability is the geometric mean of the ECG-query and PPG-key scale-invariant SQIs, so both members of an interacting pair contribute to corruption handling. There is no second routing operation. The default mask retains every naturally valid boundary interaction. A matched fixed-uniform within-band control uses the same admissible edges without learned query-key weighting; degree-preserving random rewiring, a zero-centered nonzero local graph, a PPG-leading mirror, and a common-support shifted band probe topology, direction, and location. The matched no-delay model shares all trainable parameters and differs only in mask policy.
+## Evidence by design
 
-## Release scope
+- Every primary subject is held out exactly once under the fixed subject-grouped
+  protocol; the random-segment split is released only as a protocol-sensitivity
+  control.
+- The main no-delay control matches PhysioCAT's trainable parameters and differs
+  only in the cross-attention support policy.
+- Degree-preserving rewiring, shifted-band, direction, uniform-affinity, timing,
+  normalization, and SQI controls separate physiological timing from generic
+  sparsity or added attention capacity.
+- External predictions are bound to frozen source checkpoints and patient-level
+  source/target identity audits.
+- Reference ABP is never a model or inference input; it is used only to derive
+  or audit labels.
 
-All 50 reported configurations use the same complete five-fold subject-grouped OOF protocol, producing 250 formal configuration-by-fold fits. Structural and physiology-facing choices are fixed before outer evaluation; `design_parameter_provenance.csv` records their source, while a common three-candidate training-setting grid for the six main neural models is resolved on fold-local validation subjects with no outer-test metrics available. The total includes 20 independently trained degree-preserving random-rewiring topologies (100 fits); initialization and data order are fixed while only the topology seed changes. Each random graph is obtained by bipartite double-edge swaps and exactly preserves the default row and column degree vectors; the reverse branch is its transpose. Two additional optimization seeds for four mechanism-relevant models add 40 separately identified stability fits. Three source-transfer models are each repeated with three source-training seeds (nine source-model runs; six beyond the primary seed). Prediction authorities bind row counts, subject scope, prediction columns, value digests, and file digests. Formal, stability, and source-model ledgers expose fold or source roles, validation and test metrics, timestamps, GPU assignment, wall-clock duration, GPU-hours, and run receipts. Both matched core checkpoints are released for all five outer folds with complete validation-prediction shards and selected-to-stop histories; the primary-seed frozen source checkpoints are also included. Contrastive and supervised phases use separate optimizer/scheduler states and independently restart warm-up. `artifacts/protocol/source_model_prediction_lineage.csv` binds each primary frozen source checkpoint to source-validation and zero-shot target prediction authorities, while `source_model_three_seed_protocol.csv` binds all three source seeds to released validation and target predictions. Attention evidence is a fixed-seed balanced sample of 256 subject-grouped outer-test subjects with four PAT-detected windows per subject. Compact architecture fixtures remain separately labeled and are not used as result sources.
+The concise [reviewer guide](REVIEWER_GUIDE.md) maps claims to files and
+commands. The [scientific contract](docs/SCIENTIFIC_CONTRACT.md) records the
+complete data, model, protocol, and release boundaries without overloading the
+project homepage.
 
-See `REVIEWER_GUIDE.md` for claim-oriented verification paths and `VERSIONING.md` for the immutable review-snapshot policy.
+## Data access
+
+Raw PulseDB and MIMIC-BP waveforms are not redistributed. The released adapters
+operate on local copies obtained under the source repositories' access and
+data-use terms. Fixed folds, de-identified lineage hashes, predictions,
+checkpoints, audit fixtures, and derived evidence required to inspect the paper
+are included here.
+
+## Citation
+
+If this repository supports your work, please cite the associated manuscript
+and the software release described in [`CITATION.cff`](CITATION.cff). GitHub's
+**Cite this repository** menu exports the software citation metadata.
+
+## License and immutable snapshot
+
+Code is released under the [BSD 3-Clause License](LICENSE). Dataset access and
+use remain governed by the original data providers.
+
+The final submission state is fixed by the immutable annotated tag
+[`bspc-submission-v2`](https://github.com/shangyr/PhysioCAT/tree/bspc-submission-v2)
+and its GitHub
+[Release](https://github.com/shangyr/PhysioCAT/releases/tag/bspc-submission-v2).
+The earlier `bspc-submission-v1` snapshot remains permanently available and is
+not moved. See [`VERSIONING.md`](VERSIONING.md).
