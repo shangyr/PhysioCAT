@@ -1,0 +1,13 @@
+cohort,model,outcome,subjects,windows,aligned_target_mae,repository_scalar_mae,mae_change_repository_minus_aligned,repository_minus_aligned_target_bias,repository_vs_aligned_target_mae,repository_minus_aligned_target_sd
+pulsedb_vital,physiocat,SBP,2714,186252,4.263173,4.283642,0.020469,-0.011758,0.382101,0.478680
+pulsedb_vital,physiocat,DBP,2714,186252,3.108044,3.122093,0.014049,0.009627,0.287515,0.359954
+pulsedb_vital,matched_no_delay,SBP,2714,186252,5.250650,5.267626,0.016976,-0.011758,0.382101,0.478680
+pulsedb_vital,matched_no_delay,DBP,2714,186252,3.512501,3.525050,0.012549,0.009627,0.287515,0.359954
+pulsedb_vital,mufubp_net,SBP,2714,186252,5.104964,5.121857,0.016893,-0.011758,0.382101,0.478680
+pulsedb_vital,mufubp_net,DBP,2714,186252,3.378071,3.392011,0.013940,0.009627,0.287515,0.359954
+pulsedb_mimic,physiocat,SBP,2201,164882,4.949931,4.963492,0.013561,-0.013261,0.383104,0.479935
+pulsedb_mimic,physiocat,DBP,2201,164882,3.517261,3.530763,0.013502,0.009298,0.287006,0.359598
+pulsedb_mimic,matched_no_delay,SBP,2201,164882,6.401886,6.412218,0.010332,-0.013261,0.383104,0.479935
+pulsedb_mimic,matched_no_delay,DBP,2201,164882,4.204942,4.216273,0.011331,0.009298,0.287006,0.359598
+pulsedb_mimic,mufubp_net,SBP,2201,164882,6.149248,6.159659,0.010412,-0.013261,0.383104,0.479935
+pulsedb_mimic,mufubp_net,DBP,2201,164882,4.119133,4.130040,0.010908,0.009298,0.287006,0.359598

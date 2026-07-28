@@ -1,0 +1,9 @@
+analysis,estimate,interval_low,interval_high,metric,n_windows,n_r_wave_queries
+Observed sparse attention,0.586111,0.543346,0.626421,Pearson r: apparent PAT vs expected attention delay,1024,9030
+Window-level PAT permutation,-0.002433,-0.057201,0.077689,Null Pearson r across 100 permutations,1024,9030
+Within-subject window permutation,0.007531,-0.064268,0.081327,Null centered Pearson r across 100 permutations,1024,9030
+Within-subject centered association,0.604621,0.557086,0.651433,Pearson r after subject-mean centering,1024,9030
+20 band-constrained random-weight seeds,-0.003633,-0.046694,0.056901,Null Pearson r across random weights,1024,9030
+Excess over random-weight null,0.589744,,,Delta Pearson r,1024,9030
+Excess over within-subject permutation null,0.578580,,,Delta Pearson r,1024,9030
+Observed sparse attention,0.632215,,,Mean apparent-PAT-neighborhood mass,1024,9030

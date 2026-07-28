@@ -1,0 +1,40 @@
+kind: evaluation
+split: independently_trained_random_mask_topology_replication
+outer_folds: 5
+subjects: 2714
+mask_seeds:
+- 82000
+- 82001
+- 82002
+- 82003
+- 82004
+- 82005
+- 82006
+- 82007
+- 82008
+- 82009
+- 82010
+- 82011
+- 82012
+- 82013
+- 82014
+- 82015
+- 82016
+- 82017
+- 82018
+- 82019
+fixed_initialization_seed: 42
+fixed_data_order_seed: 42
+each_topology_trained_independently: true
+metrics:
+- MAE
+weighting:
+- subject
+bootstrap:
+  cluster: held_out_subject
+  reps: 2000
+  seed: 42
+  interval: percentile_95
+paired_test:
+  unit: held_out_subject
+  multiplicity: single_Holm_family_across_22_reported_tests

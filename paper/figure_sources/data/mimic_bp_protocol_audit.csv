@@ -1,0 +1,4 @@
+analysis,model,subjects,windows,role,sbp_mae,sbp_ci_low,sbp_ci_high,dbp_mae,dbp_ci_low,dbp_ci_high
+MIMIC-BP,PhysioCAT,1524,39498,zero-shot external validation,4.825622,4.766298,4.888858,3.410540,3.370696,3.450050
+MIMIC-BP,Matched no-delay,1524,39498,zero-shot external validation,6.449049,6.355546,6.542233,4.224262,4.168570,4.280279
+MIMIC-BP,MuFuBP-Net,1524,39498,zero-shot external validation,5.958611,5.876379,6.041796,4.033720,3.977782,4.088819

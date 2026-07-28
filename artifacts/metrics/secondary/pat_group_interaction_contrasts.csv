@@ -1,0 +1,13 @@
+comparator_model,outcome,reference_group,comparison_group,paired_subjects,difference_in_mae_reduction_mmHg,cluster_bootstrap_ci_low,cluster_bootstrap_ci_high,bootstrap_reps
+matched_no_delay,SBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.226957,0.085676,0.375957,2000
+matched_no_delay,SBP,PAT detected: 120--450 ms,PAT not detected,2512,0.521930,0.403037,0.644936,2000
+matched_no_delay,DBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.191051,0.085625,0.291539,2000
+matched_no_delay,DBP,PAT detected: 120--450 ms,PAT not detected,2512,0.405708,0.315206,0.499844,2000
+ppg_leading_mirror,SBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.094941,-0.031952,0.222569,2000
+ppg_leading_mirror,SBP,PAT detected: 120--450 ms,PAT not detected,2512,0.205255,0.089308,0.319671,2000
+ppg_leading_mirror,DBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.156067,0.062899,0.250629,2000
+ppg_leading_mirror,DBP,PAT detected: 120--450 ms,PAT not detected,2512,0.268022,0.181580,0.357737,2000
+direction_agnostic_local,SBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.208411,0.065721,0.347936,2000
+direction_agnostic_local,SBP,PAT detected: 120--450 ms,PAT not detected,2512,0.680593,0.564770,0.800993,2000
+direction_agnostic_local,DBP,PAT detected: 120--450 ms,PAT detected: outside 120--450 ms,2167,0.205604,0.110854,0.301556,2000
+direction_agnostic_local,DBP,PAT detected: 120--450 ms,PAT not detected,2512,0.504110,0.414539,0.589551,2000

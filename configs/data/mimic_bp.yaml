@@ -1,0 +1,37 @@
+kind: cohort
+name: mimic_bp
+role: separately_curated_mimic_iii_zero_shot_external
+identity:
+  split_unit: subject_id
+  within_cohort_subject_disjoint: true
+  cross_cohort_independence_claimed: false
+retention:
+  required_checks:
+  - adult_metadata
+  - scalar_target_valid
+  - beat_count_pass
+  - ecg_quality_pass
+  - ppg_quality_pass
+  - paired_sample_continuity
+  - sqi_rule_pass
+  pat_fields_forbidden:
+  - pat_detected
+  - pat_ms
+  - pat_in_model_band
+pat_audit:
+  detection_range_ms:
+  - 60
+  - 650
+  model_compatibility_band_ms:
+  - 120
+  - 450
+  used_for_retention: false
+  missing_values_retained: true
+labels:
+  target_policy: curated_scalar_same_record
+  alignment: same synchronized 8-s crop or released 8-s record
+  abp_quality_used_for_retention: false
+  reference_quality_audit: ABP-SQI sensitivity for PulseDB protocols; not an input-side
+    gate
+  target_validity: finite scalar pair with 0 < DBP < SBP
+  outcome_range_used_for_post_target_retention: false

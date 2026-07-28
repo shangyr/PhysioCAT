@@ -1,0 +1,19 @@
+kind: dataset_adapter
+file_glob: "**/*.mat"
+source_sample_rate_hz: 125
+target_sample_rate_hz: 250
+window_seconds: 8
+trim_seconds_each_side: 0
+target_policy: aligned_abp_crop
+subject_regex: "(?:subject|patient)[_-]?([A-Za-z0-9]+)"
+record_regex: "([^/]+)\\.mat$"
+fields:
+  ecg: [Subj_Wins/ECG_Record, ECG_Record, Subj_Wins/ECG_Raw, ECG_Raw, ECG, ecg]
+  ppg: [Subj_Wins/PPG_Record, PPG_Record, Subj_Wins/PPG_Raw, PPG_Raw, PPG, ppg, pleth]
+  abp: [Subj_Wins/ABP_Record, ABP_Record, Subj_Wins/ABP_Raw, ABP_Raw, ABP_F, ABP, abp]
+  sbp: [Subj_Wins/SegSBP, SegSBP, SBP, sbp]
+  dbp: [Subj_Wins/SegDBP, SegDBP, DBP, dbp]
+  subject_id: [Subj_Wins/Subject, Subject, subject_id, patient_id]
+  record_id: [Subj_Wins/Record, Record, record_id, segment_id]
+  age_years: [Subj_Wins/Age, Age, age_years, age]
+  sex: [Subj_Wins/Gender, Subj_Wins/Sex, Gender, Sex, sex, gender]

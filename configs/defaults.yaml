@@ -1,0 +1,17 @@
+kind: defaults
+version: 1.0.0
+sampling:
+  sample_rate_hz: 250
+  window_seconds: 8
+  samples_per_window: 2000
+  token_stride_samples: 16
+  token_spacing_ms: 64
+reproducibility:
+  master_seed: 7151
+  deterministic_algorithms: true
+  float_precision: float32
+paths:
+  predictions: artifacts/predictions
+  metrics: artifacts/metrics
+  figures: paper/figures
+  reports: reports/reproduced

@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "PhysioCAT reproducibility artifact"
+message: "Please cite the associated manuscript and this software release."
+type: software
+version: 1.0.0
+date-released: 2026-07-28
+license: BSD-3-Clause
+repository-code: "https://github.com/shangyr/PhysioCAT"
+url: "https://github.com/shangyr/PhysioCAT"
+keywords:
+  - cuffless blood pressure estimation
+  - electrocardiography
+  - photoplethysmography
+  - cross-attention
+  - multimodal learning
+  - reproducible research
+authors:
+  - family-names: "Shang"
+    given-names: "Youren"
+  - family-names: "Zhang"
+    given-names: "Ningyuan"
+    email: "25b910030@stu.hit.edu.cn"

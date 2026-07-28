@@ -1,0 +1,19 @@
+kind: dataset_adapter
+file_glob: "**/*.h5"
+source_sample_rate_hz: 125
+target_sample_rate_hz: 250
+window_seconds: 8
+trim_seconds_each_side: 0
+target_policy: curated_scalar_same_record
+subject_regex: "(?:p|subject[_-]?)([0-9]+)"
+record_regex: "([^/]+)\\.h5$"
+fields:
+  ecg: [signals/ecg, ECG, ecg]
+  ppg: [signals/ppg, PPG, ppg, pleth]
+  abp: [signals/abp, ABP, abp, art]
+  sbp: [labels/sbp, SBP, sbp]
+  dbp: [labels/dbp, DBP, dbp]
+  subject_id: [metadata/subject_id, subject_id, patient_id]
+  record_id: [metadata/record_id, record_id, segment_id]
+  age_years: [metadata/age_years, age_years, age]
+  sex: [metadata/sex, sex, gender]

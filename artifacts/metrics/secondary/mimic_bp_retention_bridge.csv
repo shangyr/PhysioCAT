@@ -1,0 +1,3 @@
+analysis_subset,subjects,windows,subject_coverage_pct,window_coverage_pct,role
+Target-formed paired ECG+PPG candidates,1524,42822,100.000000,100.000000,external evaluable candidate pool after disclosed target formation
+Fixed retained MIMIC-BP cohort,1524,39498,100.000000,92.237635,zero-shot external validation

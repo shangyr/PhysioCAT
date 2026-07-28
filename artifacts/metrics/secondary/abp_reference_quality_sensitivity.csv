@@ -1,0 +1,10 @@
+analysis_view,abp_sqi_threshold,model,subjects,windows,abp_sqi_median,sbp_mae,dbp_mae
+All retained windows,,physiocat,2714,186252,0.668817,4.263173,3.108044
+All retained windows,,matched_no_delay,2714,186252,0.668817,5.250650,3.512501
+All retained windows,,mufubp_net,2714,186252,0.668817,5.104964,3.378071
+ABP SQI >= 0.42,0.420000,physiocat,2712,182642,0.671734,4.259980,3.103518
+ABP SQI >= 0.42,0.420000,matched_no_delay,2712,182642,0.671734,5.241118,3.506437
+ABP SQI >= 0.42,0.420000,mufubp_net,2712,182642,0.671734,5.089809,3.371365
+ABP SQI >= 0.55,0.550000,physiocat,2705,154531,0.695515,4.238587,3.064263
+ABP SQI >= 0.55,0.550000,matched_no_delay,2705,154531,0.695515,5.178644,3.466213
+ABP SQI >= 0.55,0.550000,mufubp_net,2705,154531,0.695515,5.021812,3.329489

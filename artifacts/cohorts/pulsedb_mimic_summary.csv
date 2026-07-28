@@ -1,0 +1,10 @@
+cohort,quantity,value
+pulsedb_mimic,source_indexed_segments,211414
+pulsedb_mimic,paired_waveform_crops,206873
+pulsedb_mimic,target_formed_candidates,198800
+pulsedb_mimic,target_formation_failures,12614
+pulsedb_mimic,retained_windows,164882
+pulsedb_mimic,retained_subjects,2201
+pulsedb_mimic,PAT_detected_retained_windows,157235
+pulsedb_mimic,PAT_missing_retained_windows,7647
+pulsedb_mimic,PAT_outside_120_450_retained_windows,4773

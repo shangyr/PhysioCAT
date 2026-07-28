@@ -1,0 +1,3 @@
+model,parameters,flops_per_8s_window,h800_forward_latency_ms,memory_footprint
+No-delay-band cross-attention,0.77M,0.38G,1.840000,3.1 MB
+PhysioCAT,0.77M,0.38G,1.860000,3.1 MB

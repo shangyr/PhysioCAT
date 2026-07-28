@@ -1,0 +1,11 @@
+item,value,specification_source,selection_scope
+sample_rate_hz,250,common analysis grid,fixed before outer evaluation
+window_seconds,8,public-cohort segment support,fixed before outer evaluation
+patch_samples,16,64 ms tokenization on the 250 Hz grid,fixed before outer evaluation
+delay_envelope_ms,120--450,pulse-arrival literature,fixed before outer evaluation
+implemented_offsets,"3,4,5,6",complete 16-sample patch support inside the delay envelope,fixed before outer evaluation
+sqi_rule,min>=0.40 and max>=0.55,scale-invariant ECG/PPG quality specification,fixed before outer evaluation
+subject_window_cap,96,subject-balance retention policy,fixed before model fitting
+hidden_dim_and_temporal_layers,128 and 2,capacity specification shared by PhysioCAT and matched control,fixed before outer evaluation
+optimizer_batch_regularization,three candidates per neural model,common training-setting grid,selected within each outer fold using validation subjects only
+checkpoint_epoch,minimum validation mean component MAE,common early-stopping rule,selected within each outer fold using validation subjects only

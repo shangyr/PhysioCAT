@@ -1,0 +1,7 @@
+source_model,outcome,subjects,windows,mae
+physiocat,SBP,272,18769,4.320227
+physiocat,DBP,272,18769,3.055137
+matched_no_delay,SBP,272,18769,5.406931
+matched_no_delay,DBP,272,18769,3.527009
+mufubp_net,SBP,272,18769,5.001594
+mufubp_net,DBP,272,18769,3.406968

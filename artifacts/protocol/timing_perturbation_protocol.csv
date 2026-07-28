@@ -1,0 +1,5 @@
+control,seed,minimum_absolute_shift_tokens,maximum_absolute_shift_tokens,patch_samples,minimum_absolute_shift_ms,maximum_absolute_shift_ms,direction,boundary_policy,donor_constraint,operation
+token_aligned_ppg_shift,160000,3,10,16,192,640,random_bidirectional,circular_token_roll,,integer token-block circular translation
+cross_subject_pairing,160001,,,,,,,,different_subject,deterministic donor permutation
+ppg_time_reversal,,,,,,,,,,reverse sample order
+implausible_delay_mask,,,,,516,828,ECG-leading,natural boundary support,,shifted sparse attention mask

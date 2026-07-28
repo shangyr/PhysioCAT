@@ -1,0 +1,20 @@
+kind: experiment
+name: main_and_external_evidence_chain
+cohort_config:
+- configs/data/pulsedb_vital.yaml
+- configs/data/pulsedb_mimic.yaml
+- configs/data/mimic_bp.yaml
+model_configs:
+- configs/model/physiocat.yaml
+- configs/model/matched_no_delay.yaml
+- configs/model/mufubp_net.yaml
+- configs/model/te_sagru.yaml
+- configs/model/bp_net.yaml
+- configs/model/cnn_bilstm.yaml
+evaluation_config:
+- configs/evaluation/subject_grouped_5fold.yaml
+- configs/evaluation/external_zero_shot.yaml
+outputs:
+- artifacts/metrics/main/main_window_metrics.csv
+- artifacts/metrics/external/external_window_metrics.csv
+- artifacts/metrics/statistics/paired_subject_tests.csv

@@ -1,0 +1,909 @@
+\pdfminorversion=7
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs,multirow,array,makecell}
+\usepackage{graphicx}
+\graphicspath{{./}}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{lscape}
+\urlstyle{same}
+\hypersetup{hidelinks}
+\captionsetup{font=small,labelfont=bf}
+\setstretch{1.08}
+\emergencystretch=2em
+
+\title{\textbf{Supplementary Material for: PhysioCAT: Physiological Delay-Banded Cross-Attention for Subject-Independent Cuffless Blood Pressure Estimation from ECG and PPG}}
+\author{Youren Shang, Ningyuan Zhang$^{*}$\\
+\small eHealth Research Institute, School of Management, Harbin Institute of Technology,\\
+\small Harbin 150001, China\\
+\small $^{*}$Corresponding author: 25b910030@stu.hit.edu.cn}
+\date{}
+
+\begin{document}
+\maketitle
+
+\appendix
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+\section*{Supplementary Material}
+
+This supplement contains cohort definitions, fixed-protocol checks, mechanism controls, transfer analyses, subgroup results, and computational profiles supporting the main manuscript. Reference numbers follow the main manuscript.
+
+\subsection*{S1. SQI definition, dataset retention, and reproducibility}
+
+\paragraph{Source-field and candidate lineage.}
+The raw-source adapters support the public MATLAB layouts used by PulseDB and MIMIC-BP. For PulseDB, paired unfiltered \texttt{ECG\_Record/PPG\_Record} fields are preferred, with \texttt{ECG\_Raw/PPG\_Raw} as fallbacks. Each source-listed row yields at most one centered 8 s crop; crop and target-formation outcomes are retained in the public reproducibility repository.
+
+\paragraph{Signal-quality index.}
+Window-level SQI was computed separately for ECG and PPG, then used in the fixed retention rule and as a token-level reliability cue in PhysioCAT. Let $c(z)=\min(1,\max(0,z))$, $\epsilon_E=10^{-8}$, and $\epsilon_P=10^{-6}$. For an ECG window $x_E$ with detected R peaks, define $E_E=\sum_t x_E(t)^2$, let $E_R$ be the energy within $\pm50$ ms of the detected R peaks, and let $\kappa_E$ denote Fisher kurtosis. The ECG SQI is
+\begin{equation}
+SQI_E
+=c\left\{\frac{1}{2}c\left(\frac{\kappa_E+3}{20}\right)
++\frac{1}{2}\frac{E_R}{E_E+\epsilon_E}\right\}.
+\end{equation}
+For a median-centered PPG window $x_P$, let $X_P(f)$ denote its discrete Fourier transform and define
+\begin{align}
+R_P &= \frac{\sum_{0.5\leq f\leq4}|X_P(f)|^2}{\sum_{0.3\leq f\leq8}|X_P(f)|^2+\epsilon_P},\\
+s_P &= c\left\{\min\left(\frac{d_+}{d_-},\frac{d_-}{d_+}\right)\right\},
+\end{align}
+where $d_+=\max(P_{99}(\nabla x_P),\epsilon_P)$ and $d_-=\max(|P_{1}(\nabla x_P)|,\epsilon_P)$. The PPG SQI is
+\begin{equation}
+SQI_P=c\left\{0.6R_P+0.4s_P\right\}.
+\end{equation}
+Both terms are invariant to affine amplitude scaling and therefore serve as morphology-quality cues rather than perfusion-amplitude features. All reported models receive only scalar SBP and DBP targets. For PulseDB-Vital and PulseDB-MIMIC, consecutive detected cardiac boundaries at least 280 ms apart defined candidate ABP beats. Non-finite or unordered extrema were removed, followed by a within-window $3.5\times1.4826\times\mathrm{MAD}$ rule applied jointly to beat midpoint and pulse pressure; at least three accepted beats were required. The target was the mean of the accepted beat maxima and minima from the same synchronized 8 s crop. Cohort eligibility after target formation used the ECG/PPG checks and joint SQI rule below; reference-ABP quality is examined separately in Supplementary Table S28. MIMIC-BP contributes curated scalar labels paired with the released 8 s record.
+The fixed retention rule kept a window when
+\begin{equation}
+\min(SQI_E,SQI_P)\geq0.40
+\quad\mathrm{and}\quad
+\max(SQI_E,SQI_P)\geq0.55.
+\end{equation}
+Supplementary Table S1 lists how the components enter preprocessing and token-level reliability cues.
+
+\begin{table}[H]
+\centering
+\caption{Signal-quality-index components used for preprocessing and token-level reliability cues.}
+\label{tab:sqi_definition}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{2.6cm}p{7.0cm}p{5.2cm}}
+\toprule
+Component & Definition & Physiological meaning \\
+\midrule
+ECG SQI & Kurtosis term plus R-peak-neighborhood energy ratio. & Rewards sharp, repeatable QRS-dominant morphology. \\
+PPG SQI & Pulse-band spectral concentration plus robust positive-versus-negative slope balance. & Rewards periodic pulse morphology without using absolute perfusion amplitude. \\
+Token SQI & One-second sliding-window SQI values, advanced every 4 ms, interpolated to the centers of the 125 non-overlapping patches in each 8 s window. & Provides local reliability weights during fusion. \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Stepwise preprocessing retention for the primary PulseDB-Vital cohort.}
+\label{tab:preprocess_flow}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrr}
+\toprule
+Preprocessing step & Retained subjects & Retained windows & Window retention rate \\
+\midrule
+Source-indexed adult waveform segments & 2{,}714 & 240{,}428 & 100.0\% \\
+Paired ECG/PPG crop available & 2{,}714 & 235{,}067 & 97.8\% \\
+Scalar target formed or paired & 2{,}714 & 225{,}536 & 93.8\% \\
+At least six cardiac cycles & 2{,}714 & 222{,}773 & 92.7\% \\
+ECG channel quality & 2{,}714 & 216{,}078 & 89.9\% \\
+PPG channel quality & 2{,}714 & 207{,}244 & 86.2\% \\
+Common paired-sample continuity & 2{,}714 & 205{,}138 & 85.3\% \\
+Joint ECG/PPG SQI rule & 2{,}714 & 193{,}533 & 80.5\% \\
+Subject-balance cap (maximum 96 windows per subject) & 2{,}714 & 186{,}252 & 77.5\% \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Retained-versus-excluded distributions for the primary PulseDB-Vital cohort.}
+\label{tab:selection_bias}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+Window group & Windows & SBP median [IQR] & DBP median [IQR] & Age median [IQR] & Female proportion & Min-modality SQI; apparent PAT median [IQR] \\
+\midrule
+Final retained after cap & 186{,}252 & 126 [117--135] & 68 [63--75] & 61 [51--69] & 36.3\% & 0.69 [0.60--0.78]; 277 [233--320] ms \\
+Removed by fixed eligibility checks & 32{,}003 & 125 [116--135] & 68 [62--74] & 61 [51--69] & 34.9\% & 0.40 [0.33--0.48]; 278 [234--321] ms \\
+Removed only by 96-window cap & 7{,}281 & 126 [117--135] & 68 [63--74] & 61 [51--69] & 34.1\% & 0.73 [0.64--0.81]; 277 [234--320] ms \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Reproducibility summary for the subject-disjoint benchmark.}
+\label{tab:repro}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{3.8cm}p{8.2cm}p{5.0cm}}
+\toprule
+Item & Setting & Supporting repository record \\
+\midrule
+Outer folds & Five fixed subject-grouped folds; 542--543 test subjects, 271 validation subjects, and 1{,}900--1{,}901 training subjects per fold; every retained subject is tested exactly once & Fold manifests \\
+Partition integrity & Train, validation, and test subjects are disjoint in every fold; each retained subject is tested exactly once & Partition and membership audits \\
+Validation assignment & In each fold, 271 fixed-seed subjects from the four non-test groups form the validation set; all remaining non-test subjects train the model & Fold-membership policy and validation manifest \\
+Training scope & All main models use the same deterministic whole-window robust normalization; structural parameters are fixed before outer evaluation; validation subjects were used for the common training-setting grid, early stopping, and checkpoint selection & Design-provenance and fold-local selection records \\
+Prediction files & 7 released prediction artifacts support the main, mechanism, and transfer analyses & Prediction manifest \\
+Released checkpoints & 10 representative outer-fold checkpoints and 3 frozen source-model checkpoints are provided for executable review & Checkpoint manifest \\
+Executable code & Raw-source adapters, fold construction, training, inference, metric recomputation, and figure reproduction are released & Repository reproduction entry point \\
+Integrity & Package files are covered by a deterministic SHA-256 inventory and the public workflow is rerun in a clean output directory & Hash inventory and clean-room report \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{PhysioCAT architecture and training configuration used in the primary subject-disjoint benchmark. Structural choices were fixed before outer evaluation; conventional training settings were selected within each outer fold from a fixed three-candidate grid using validation subjects only.}
+\label{tab:training_hyperparameters}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{4.2cm}p{12.8cm}}
+\toprule
+Component & Frozen setting \\
+\midrule
+Input and tokenization & Paired 8 s ECG/PPG windows at 250 Hz; 2{,}000 samples; non-overlapping 16-sample patches; 125 tokens; 64 ms token spacing \\
+Model-input normalization & All main models and comparators: whole-window 0.5th--99.5th percentile pre-clipping followed by median/IQR scaling with floor $10^{-6}$ and clipping to $[-8,8]$; no subject- or cohort-fitted statistics. Patch-local normalization is used only as a sensitivity control \\
+Analysis branch & Zero-phase fourth-order Butterworth filters (ECG 0.5--40 Hz; PPG 0.4--12 Hz) followed by level-4 Symlet-4 soft-threshold denoising for beat detection and SQI only; the model branch uses the same shared crop without this analysis transform, followed by its declared deterministic normalization \\
+Patch encoders & Modality-specific 128-channel local projection; token-wise residual MLP expansion $\times2$; learned position and modality embeddings \\
+  Cross-attention & Four heads; opposite query/key assignments score the same ECG-leading edges; support-conservative offsets 3--6 (center lags 192--384 ms; complete patch support 132--444 ms inside the 120--450 ms literature envelope); 482 edges and 122 active ECG-anchor rows; reciprocal affinities and pairwise ECG/PPG SQI are fused once on each admissible edge; the three unsupported boundary rows are exactly zero \\
+Temporal context and head & Two post-fusion Transformer layers; unsupported boundary rows are padding-masked and excluded from attentive/mean/max pooling; feed-forward expansion $\times4$; dropout 0.10; 128-unit GELU regression layer; two outputs \\
+Optimization & AdamW; selected learning rate 6.0e-04, weight decay 0.0e+00, and batch size 32 from a fixed three-candidate grid using validation mean SBP/DBP MAE in each outer fold \\
+Schedule and checkpointing & Five-epoch linear warm-up followed by cosine decay; at most 80 supervised epochs; patience 12; minimum validation mean SBP/DBP MAE, earliest epoch breaking ties \\
+  Contrastive pre-training & 5 fold-local epochs; mean-pooled 128-dimensional ECG and PPG features; separate training-only two-layer 128-dimensional projection heads; intra-ECG, intra-PPG, and cross-modal InfoNCE weights 1:1:0.5; temperature 0.10; shared paired shift $\pm8$ samples; independent amplitude perturbation SD 0.04 and additive-noise SD 0.025; same-subject off-diagonal negatives excluded \\
+  Supervised objective & Component-wise Huber $\delta=5$ mmHg; soft SBP--DBP non-inversion penalty with weight 0.15; MuFuBP-Net alone retains its published probabilistic KL term at weight $10^{-3}$ \\
+  Seeds and environment & Initialization/data-order seed 42; random-sparse control seeds 82{,}000--82{,}019; deterministic-algorithm mode; PyTorch 2.12.0; profiling environments are listed with the released timing logs \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Supervised loss.} For prediction $\hat y=(\hat s,\hat d)$ and target $y$, the optimized scalar-target objective was
+\[
+L_{sup}=L_{Huber,\delta=5}(\hat y,y)+0.15[\hat d-\hat s]_+.
+\]
+The contrastive stage applied separate training-only two-layer projection heads to the mean-pooled ECG and PPG features. The intra-ECG, intra-PPG, and synchronized ECG--PPG InfoNCE terms were weighted 1:1:0.5, and same-subject off-diagonal pairs were excluded from every denominator. Projection heads were discarded before supervised inference.
+
+
+\begin{table}[H]
+\centering
+\caption{Comparator implementation and checkpoint summary for the main comparison. Parameter counts are computed directly from the released model classes. All methods use the same whole-window robust normalization and scalar-output protocol; the matched control shares the complete PhysioCAT parameterization and replaces only the delay-band restriction with full-key attention on the same query support.}
+\label{tab:provenance}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{2.5cm}p{2.5cm}p{3.3cm}p{1.4cm}p{4.0cm}p{2.8cm}p{1.7cm}p{1.7cm}}
+\toprule
+Method & Role & Input adaptation & Params. & Implementation / adaptation & Checkpoint selection & SBP MAE & DBP MAE \\
+\midrule
+PhysioCAT & Proposed model & ECG + PPG + token SQI; window-robust & 0.77M & Local patch encoders; reciprocal query/key scores combined on the same ECG-leading edges; pairwise ECG/PPG SQI; post-fusion temporal context & Fold-local validation for training-setting and checkpoint selection & 4.26 & 3.11 \\
+No-delay-band cross-attention & Matched mechanism control & ECG + PPG + token SQI; window-robust & 0.77M & Identical reciprocal edge-aligned backbone and training configuration; unrestricted key support on the default ECG-anchor rows & Fold-local validation for training-setting and checkpoint selection & 5.25 & 3.51 \\
+MuFuBP-Net & Neural comparator & ECG + PPG; window-robust & 7.06M & Morphology/dynamics streams and probabilistic fusion retained; scalar head and subject-disjoint folds adapted & Fold-local validation for checkpoint selection & 5.10 & 3.38 \\
+TE-SAGRU & Neural comparator & ECG + PPG; window-robust & 2.17M & Parallel modality encoders and stacked attention-gated GRU fusion retained; raw-waveform front end and scalar head adapted & Fold-local validation for checkpoint selection & 5.53 & 3.70 \\
+BP-Net & Neural comparator & ECG + PPG; window-robust & 1.94M & Deep convolutional BP feature extractor retained; paired-input and two-output head adapted & Fold-local validation for checkpoint selection & 6.08 & 4.17 \\
+CNN-BiLSTM & Neural comparator & ECG + PPG; window-robust & 1.26M & Multiscale CNN, bidirectional LSTM, and common two-output head & Fold-local validation for checkpoint selection & 6.37 & 4.34 \\
+Engineered-feature random forest & Feature comparator & ECG + PPG features; window-robust & 500 trees & 500-tree fold-local estimator with deterministic engineered features & Fold-local fitting & 8.32 & 5.20 \\
+PAT ridge model & Feature comparator & PAT + heart rate + missing-PAT indicator; window-robust & 8 coeff. & Three features plus one bias per outcome; eight fitted coefficients in total & Fold-local fitting & 9.52 & 6.06 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Optimization- and mask-topology stability on the complete five-fold subject-grouped PulseDB-Vital protocol. The first four rows vary training seeds 42, 1337, and 2025; the final row summarizes 20 independently trained degree-preserving random-rewiring topologies with fixed initialization and data-order seeds. Values are window-weighted MAE mean $\pm$ standard deviation across seeds.}
+\label{tab:seed_stability}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcc}
+\toprule
+Stability condition & SBP MAE (mmHg) & DBP MAE (mmHg) \\
+\midrule
+PhysioCAT (3 training seeds) & $4.25 \pm 0.04$ & $3.13 \pm 0.02$ \\
+MuFuBP-Net (3 training seeds) & $5.14 \pm 0.01$ & $3.39 \pm 0.01$ \\
+No-delay-band cross-attention (3 training seeds) & $5.28 \pm 0.04$ & $3.55 \pm 0.01$ \\
+PPG-leading mirror delay band (3 training seeds) & $4.86 \pm 0.03$ & $3.47 \pm 0.03$ \\
+Degree-preserving random rewirings (20 independently trained topologies) & $5.64 \pm 0.05$ & $3.62 \pm 0.04$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection*{S2. Protocol robustness and threshold checks}
+
+\begin{table}[H]
+\centering
+\caption{Protocol-sensitivity control on PulseDB-Vital: five-fold out-of-fold random segment-level evaluation versus five-fold subject-grouped out-of-fold testing.}
+\label{tab:protocol}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcrrrr}
+\toprule
+Evaluation protocol & Train--test subject overlap & PhysioCAT SBP MAE & PhysioCAT DBP MAE & No-delay-band control SBP MAE & No-delay-band control DBP MAE \\
+\midrule
+Five-fold OOF random segment-level split & $>99\%$ & 2.23 & 1.74 & 3.22 & 2.02 \\
+Five-fold subject-grouped OOF testing & 0\% & 4.26 & 3.11 & 5.25 & 3.51 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+
+
+\begin{table}[H]
+\centering
+\caption{Subject-level errors on the synchronized PulseDB-Vital subject-disjoint evaluation.}
+\label{tab:subjectlevel}
+\small
+\begin{tabular}{lcc}
+\toprule
+Subject-level metric & SBP & DBP \\
+\midrule
+Mean MAE, mmHg & 4.27 & 3.12 \\
+Median MAE (IQR), mmHg & 4.19 (3.70--4.75) & 3.07 (2.74--3.45) \\
+90th percentile MAE, mmHg & 5.34 & 3.83 \\
+Subjects with MAE $\leq 5$ mmHg & 82.5\% & 99.7\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Subject-cluster bootstrap 95\% confidence intervals for MAE. Window estimates retain all windows from each resampled held-out subject; subject-weighted estimates first average within subject and then across subjects. All three core models use 2{,}000 resamples with seed 42.}
+\label{tab:bootstrap_ci}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccc}
+\toprule
+Cohort & Model & \makecell{Window SBP MAE\\\mbox{[95\% cluster CI]}} & \makecell{Window DBP MAE\\\mbox{[95\% cluster CI]}} & \makecell{Subject-weighted\\SBP MAE [95\% CI]} & \makecell{Subject-weighted\\DBP MAE [95\% CI]} \\
+\midrule
+PulseDB-Vital & PhysioCAT & 4.26 [4.23, 4.29] & 3.11 [3.09, 3.13] & 4.27 [4.24, 4.30] & 3.12 [3.10, 3.14] \\
+PulseDB-Vital & Matched no-delay-band cross-attention & 5.25 [5.20, 5.30] & 3.51 [3.48, 3.54] & 5.28 [5.23, 5.34] & 3.53 [3.50, 3.57] \\
+PulseDB-Vital & MuFuBP-Net & 5.10 [5.05, 5.16] & 3.38 [3.35, 3.41] & 5.14 [5.09, 5.20] & 3.40 [3.37, 3.43] \\
+PulseDB-MIMIC & PhysioCAT & 4.95 [4.91, 5.00] & 3.52 [3.49, 3.54] & 4.98 [4.94, 5.02] & 3.54 [3.51, 3.57] \\
+PulseDB-MIMIC & Matched no-delay-band cross-attention & 6.40 [6.33, 6.48] & 4.20 [4.16, 4.25] & 6.46 [6.38, 6.53] & 4.24 [4.20, 4.29] \\
+PulseDB-MIMIC & MuFuBP-Net & 6.15 [6.08, 6.22] & 4.12 [4.07, 4.16] & 6.21 [6.14, 6.28] & 4.14 [4.09, 4.18] \\
+MIMIC-BP & PhysioCAT & 4.83 [4.77, 4.89] & 3.41 [3.37, 3.45] & 4.83 [4.77, 4.90] & 3.42 [3.38, 3.46] \\
+MIMIC-BP & Matched no-delay-band cross-attention & 6.45 [6.36, 6.54] & 4.22 [4.17, 4.28] & 6.45 [6.35, 6.54] & 4.23 [4.18, 4.29] \\
+MIMIC-BP & MuFuBP-Net & 5.96 [5.88, 6.04] & 4.03 [3.98, 4.09] & 5.98 [5.89, 6.06] & 4.03 [3.98, 4.09] \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The no-delay-band PhysioCAT control is the main mechanism comparator for the delay constraint. Baseline modules, configurations, primary prediction lineage, metric source tables, and local verification manifests are documented in the public reproducibility repository.
+
+\begin{table}[H]
+\centering
+\caption{Error-threshold analysis on the synchronized PulseDB-Vital cohort.}
+\label{tab:thresholds}
+\small
+\begin{tabular}{lcc}
+\toprule
+Metric & SBP & DBP \\
+\midrule
+ME (mmHg) & 0.17 & 0.16 \\
+MAE (mmHg) & 4.26 & 3.11 \\
+SDE (mmHg) & 5.48 & 3.98 \\
+RMSE (mmHg) & 5.48 & 3.98 \\
+Absolute error $\leq 5$ mmHg & 66.3\% & 80.4\% \\
+Absolute error $\leq 10$ mmHg & 93.0\% & 98.3\% \\
+Absolute error $\leq 15$ mmHg & 98.9\% & 99.9\% \\
+    Bland--Altman 95\% LoA (mmHg) & -10.6 to 10.9 & -7.6 to 8.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Internal and external error profiles under the fixed retrospective protocols.}
+\label{tab:standards_all}
+\label{tab:external_baseline_full}
+\scriptsize
+\textbf{A. PhysioCAT error-threshold profiles}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+Cohort & SBP ME $\pm$ SDE & DBP ME $\pm$ SDE & Absolute error $\leq$5, 10, 15 mmHg (SBP) & Absolute error $\leq$5, 10, 15 mmHg (DBP) \\
+\midrule
+PulseDB-Vital & $0.17 \pm 5.48$ & $0.16 \pm 3.98$ & 66.3, 93.0, 98.9\% & 80.4, 98.3, 99.9\% \\
+PulseDB-MIMIC & $0.09 \pm 6.41$ & $-0.02 \pm 4.52$ & 59.8, 88.8, 97.4\% & 75.1, 96.8, 99.7\% \\
+MIMIC-BP & $0.12 \pm 6.19$ & $0.01 \pm 4.35$ & 60.6, 89.8, 97.9\% & 76.1, 97.5, 99.8\% \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.55em}
+\textbf{B. External matched-control and neural-comparator profiles}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccc}
+\toprule
+Cohort & Comparator & SBP ME $\pm$ SDE & DBP ME $\pm$ SDE & SBP MAE ($r$) & DBP MAE ($r$) \\
+\midrule
+PulseDB-MIMIC & Matched no-delay-band cross-attention & $0.22 \pm 8.36$ & $0.12 \pm 5.45$ & 6.40 (0.84) & 4.20 (0.85) \\
+PulseDB-MIMIC & MuFuBP-Net & $-0.03 \pm 8.07$ & $0.15 \pm 5.38$ & 6.15 (0.86) & 4.12 (0.85) \\
+MIMIC-BP & Matched no-delay-band cross-attention & $0.15 \pm 8.41$ & $0.05 \pm 5.48$ & 6.45 (0.85) & 4.22 (0.84) \\
+MIMIC-BP & MuFuBP-Net & $-0.08 \pm 7.70$ & $0.13 \pm 5.22$ & 5.96 (0.87) & 4.03 (0.86) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\subsection*{S3. Extended model analyses}
+
+\begin{table}[H]
+\centering
+\caption{Additional input, training, fusion, and normalization controls under the complete five-fold subject-grouped protocol.}
+\label{tab:additional_controls}
+\label{tab:normalization_factorial}
+\scriptsize
+\textbf{A. Input, training, and fusion controls}\\[0.25em]
+\begin{tabular}{llrr}
+\toprule
+Control family & Variant & SBP MAE & DBP MAE \\
+\midrule
+Input & ECG only & 8.54 & 5.74 \\
+Input & PPG only & 7.09 & 4.49 \\
+Training & Without subject-aware pre-training & 4.68 & 3.31 \\
+Fusion & Early concatenation & 5.98 & 3.85 \\
+Fusion & Late averaging & 6.19 & 3.99 \\
+Fusion & Gated fusion & 5.89 & 3.82 \\
+Fusion & SE-based fusion & 5.88 & 3.78 \\
+Fusion & No-delay-band bidirectional attention & 5.25 & 3.51 \\
+Fusion & PPG-leading mirror delay band & 4.82 & 3.45 \\
+Fusion & Delay-banded unidirectional attention & 4.87 & 3.49 \\
+Fusion & Full PhysioCAT & 4.26 & 3.11 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.55em}
+\textbf{B. Matched $2\times2$ normalization factorial}\\[0.25em]
+\begin{tabular}{lrr}
+\toprule
+Configuration & SBP MAE & DBP MAE \\
+\midrule
+Delay band + whole-window robust normalization & 4.26 & 3.11 \\
+No-delay + whole-window robust normalization & 5.25 & 3.51 \\
+Delay band + patch-local normalization & 4.45 & 3.23 \\
+No-delay + patch-local normalization & 5.40 & 3.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+
+\begin{table}[H]
+\centering
+\caption{Inference-time negative-control experiments on the synchronized PulseDB-Vital cohort. Increases are calculated separately for each model relative to its own unperturbed synchronized baseline.}
+\label{tab:negative}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrp{6.0cm}}
+\toprule
+Perturbation & No-delay SBP/DBP MAE & PhysioCAT SBP/DBP MAE & PhysioCAT increase SBP/DBP & Interpretation \\
+\midrule
+None & 5.25 / 3.51 & 4.26 / 3.11 & -- & Normal synchronized input \\
+Token-aligned circular PPG shift (3--10 complete 16-sample tokens; 192--640 ms) & 7.04 / 4.53 & 8.32 / 4.97 & +4.06 / +1.86 & Moves complete PPG token blocks while preserving within-token samples \\
+Cross-subject ECG-PPG pairing & 7.37 / 4.69 & 8.78 / 5.24 & +4.52 / +2.13 & Breaks subject-specific coupling \\
+PPG time reversal & 7.21 / 4.55 & 8.47 / 5.08 & +4.21 / +1.97 & Destroys pulse morphology order \\
+Implausible delay mask & 6.80 / 4.34 & 7.66 / 4.71 & +3.39 / +1.60 & Forces non-physiological attention \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Performance across signal-quality strata on the synchronized primary cohort.}
+\label{tab:sqi}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+SQI stratum & Windows (share) & PhysioCAT SBP MAE & PhysioCAT DBP MAE & Source record \\
+\midrule
+High SQI (minimum SQI $\geq 0.85$) & 21{,}329 (11.5\%) & 4.13 & 2.84 & Released high-SQI prediction slice \\
+Medium SQI ($0.70 \leq$ minimum SQI $<0.85$) & 67{,}952 (36.5\%) & 4.19 & 2.97 & Released medium-SQI prediction slice \\
+Low SQI ($0.40 \leq$ minimum SQI $<0.70$; maximum modality SQI $\geq0.55$) & 96{,}971 (52.1\%) & 4.34 & 3.26 & Released low-SQI prediction slice under the joint retention rule \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Delay-band sensitivity under the complete five-fold subject-grouped protocol. The literature-guided 120--450 ms band was held fixed throughout model comparison.}
+\label{tab:delay_sensitivity}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrp{7.2cm}}
+\toprule
+Delay band & SBP MAE & DBP MAE & Interpretation \\
+\midrule
+120--300 ms & 4.55 & 3.28 & Narrow support-conservative band \\ 
+120--350 ms & 4.43 & 3.19 & Strong but slightly restrictive \\ 
+120--450 ms & 4.26 & 3.11 & Literature-guided fixed band \\ 
+80--550 ms & 4.45 & 3.22 & Less restrictive \\ 
+No-delay-band cross-attention & 5.25 & 3.51 & No physiological timing prior \\ 
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Equal-width delay-location sweep on a common query support. Every band contains four offsets, 113 ECG-anchor rows, and 452 admissible edges; only delay location changes.}
+\label{tab:equal_width_offsets}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Offset band & ECG-anchor rows & Edges & SBP MAE & DBP MAE \\
+\midrule
+offsets 2--5 & 113 & 452 & 4.51 & 3.26 \\
+offsets 3--6 & 113 & 452 & 4.33 & 3.18 \\
+offsets 4--7 & 113 & 452 & 4.50 & 3.25 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+\subsection*{S4. Transfer, subgroup, quality, and efficiency analyses}
+
+Residual-offset calibration estimated a shrunken mean reference-minus-prediction residual for each eligible MIMIC-BP subject from 1, 2, 5, or 10 calibration windows, with a five-window prior strength. Results summarize 200 fixed-seed calibration-window draws on a common evaluation set; the reported ranges describe those draws rather than population uncertainty.
+
+Input-quality sensitivity applied the same fitted outer-fold model to nested target-formed window sets while varying the ECG/PPG SQI rule or subject-balance cap. The easier and harder waveform examples were selected by fixed descriptive rules from the high-SQI regular-rhythm and low-SQI RR-irregular pools, respectively.
+
+The source-shift map used two-component PCA of standardized demographic, SQI, spectral, and pulse-shape summaries. Runtime profiling used batch-1 inference after 500 warm-up windows and included signal preparation and tokenization in the end-to-end measurements.
+
+\begin{table}[H]
+\centering
+    \caption{Few-shot subject residual-offset calibration on MIMIC-BP after zero-shot transfer from PulseDB-Vital. Results cover 1{,}522 eligible subjects and 200 fixed-seed calibration-window draws; brackets are the 2.5th--97.5th percentiles across draws, not population confidence intervals, and calibration windows were excluded from the common evaluation set.}
+\label{tab:calibration}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{rlrrrrr}
+\toprule
+Calibration windows & Offset estimator & Evaluation windows & PhysioCAT SBP MAE & PhysioCAT DBP MAE & MuFuBP-Net SBP MAE & MuFuBP-Net DBP MAE \\
+\midrule
+0 & none & 24{,}264 & 4.82 [4.80, 4.85] & 3.41 [3.38, 3.43] & 5.95 [5.92, 5.98] & 4.04 [4.01, 4.06] \\
+1 & shrunken subject residual mean (prior strength 5 windows) & 24{,}264 & 4.76 [4.72, 4.79] & 3.37 [3.35, 3.40] & 5.86 [5.82, 5.89] & 3.98 [3.95, 4.01] \\
+2 & shrunken subject residual mean (prior strength 5 windows) & 24{,}264 & 4.71 [4.68, 4.75] & 3.35 [3.32, 3.37] & 5.79 [5.76, 5.83] & 3.94 [3.91, 3.97] \\
+5 & shrunken subject residual mean (prior strength 5 windows) & 24{,}264 & 4.62 [4.59, 4.65] & 3.30 [3.28, 3.32] & 5.67 [5.63, 5.71] & 3.86 [3.83, 3.89] \\
+10 & shrunken subject residual mean (prior strength 5 windows) & 24{,}264 & 4.55 [4.52, 4.58] & 3.25 [3.23, 3.28] & 5.58 [5.55, 5.61] & 3.80 [3.78, 3.83] \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Subgroup definitions and performance values used in Supplementary Fig.~\ref{fig:supp_error_structure}. BP and quality strata were defined at the window level; a subject could contribute to more than one stratum.}
+\label{tab:subgroup}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llp{6.4cm}rrrrr}
+\toprule
+Family & Subgroup & Definition & Subjects & Windows & Proportion & SBP MAE & DBP MAE \\
+\midrule
+Age & 18--40 & 18 $\leq$ age $\leq$ 40 years & 182 & 12{,}123 & 6.5\% & 4.26 & 3.18 \\
+Age & 41--65 & 41 $\leq$ age $\leq$ 65 years & 1{,}554 & 107{,}135 & 57.5\% & 4.24 & 3.11 \\
+Age & 66+ & Age $\geq$ 66 years & 978 & 66{,}994 & 36.0\% & 4.30 & 3.09 \\
+Sex & Female & Sex recorded as female & 985 & 67{,}565 & 36.3\% & 4.21 & 3.05 \\
+Sex & Male & Sex recorded as male & 1{,}729 & 118{,}687 & 63.7\% & 4.29 & 3.14 \\
+BP & Lower-BP windows & SBP $<$ 130 mmHg and DBP $<$ 80 mmHg; window stratum, not a clinical diagnosis & 2{,}710 & 111{,}741 & 60.0\% & 4.24 & 3.13 \\
+BP & Elevated-BP windows & SBP $\geq$ 130 mmHg or DBP $\geq$ 80 mmHg; window stratum, not a clinical diagnosis & 2{,}703 & 74{,}511 & 40.0\% & 4.30 & 3.08 \\
+Rhythm & Normal rhythm & $\sqrt{CV(RR)^2+[RMSSD/\mathrm{median}(RR)]^2}<0.28$ & 2{,}696 & 180{,}213 & 96.8\% & 4.25 & 3.10 \\
+Rhythm & Irregular rhythm & $\sqrt{CV(RR)^2+[RMSSD/\mathrm{median}(RR)]^2}\geq0.28$; descriptive rhythm-irregularity label, not a clinical arrhythmia diagnosis & 274 & 6{,}039 & 3.2\% & 4.52 & 3.20 \\
+SQI & Lowest SQI & $0.40 \leq$ minimum SQI $<0.70$, with maximum modality SQI $\geq0.55$ & 2{,}714 & 96{,}971 & 52.1\% & 4.34 & 3.26 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Primary repeated-measures Bland--Altman agreement for PhysioCAT on PulseDB-Vital. Limits combine within- and between-subject residual variance; residual ICC reports the between-subject share of total residual variance.}
+\label{tab:primary_repeated_ba}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrrr}
+\toprule
+Dataset & Windows & SBP ME & SBP repeated-measures 95\% LoA & SBP residual ICC & DBP ME & DBP repeated-measures 95\% LoA & DBP residual ICC \\
+\midrule
+PulseDB-Vital & 186{,}252 & 0.17 & -10.6 to 10.9 & 0.050 & 0.16 & -7.6 to 8.0 & 0.043 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\noindent Supplementary Table~\ref{tab:cost_model} reports the matched model footprint and measured batch-1 processing profile for representative server, workstation, and compact-edge settings.
+
+\begin{table}[H]
+\centering
+\caption{Model footprint and measured post-acquisition processing profile. Batch-1 runtimes are medians of 5{,}000 samples after 500 warm-up windows; the 8 s acquisition interval is excluded. On the fixed INT8 agreement set, SBP/DBP MAE changed by 0.04/0.02 mmHg relative to FP16.}
+\label{tab:cost_model}
+\label{tab:deploy}
+\scriptsize
+\textbf{A. Matched model footprint on H800}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrr}
+\toprule
+Model & Parameters & FLOPs / 8 s window & Forward latency (ms) & FP32 parameter memory \\
+\midrule
+No-delay-band cross-attention & 0.77M & 0.38G & 1.84 & 3.1 MB \\
+PhysioCAT & 0.77M & 0.38G & 1.86 & 3.1 MB \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.55em}
+\textbf{B. Cross-platform PhysioCAT processing profile}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+Platform & Runtime & Forward latency (ms) & End-to-end latency (ms) & Throughput (windows/s) & 8 s window / processing time \\
+\midrule
+NVIDIA H800 80 GB & PyTorch FP16 & 1.86 & 5.94 & 168.4 & $\times 1347$ \\
+Intel Xeon Gold 6338 & ONNX Runtime FP32 & 31.70 & 74.60 & 13.4 & $\times 107$ \\
+Jetson Orin NX 16 GB & TensorRT FP16 & 8.94 & 19.80 & 50.5 & $\times 404$ \\
+Jetson Orin NX 16 GB & TensorRT INT8 & 5.21 & 12.60 & 79.4 & $\times 635$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{Supplementary_Figure_S1.pdf}
+\caption{External-transfer and secondary analyses: frozen source-model validation and zero-shot transfer, residual-offset calibration, input-quality inclusion sensitivity, SBP residual structure, released input-summary source shift, and MIMIC-BP comparison.}
+\label{fig:supp_external_uncertainty}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{Supplementary_Figure_S2.pdf}
+\caption{Error-structure and computational-profile analyses: subgroup errors, released representative easier and harder waveform windows, matched-footprint comparison, post-acquisition processing latency, and descriptive high-error-tail composition.}
+\label{fig:supp_error_structure}
+\end{figure}
+
+\subsection*{S5. Additional mechanism and validation analyses}
+
+\begin{table}[H]
+\centering
+\caption{Sparse and structured mask controls under the complete five-fold subject-grouped protocol. The degree-preserving random-rewiring row uses the fixed topology seed 82{,}000; the stability analysis separately summarizes 20 independently trained topologies.}
+\label{tab:mask_specific_controls}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{3.4cm}p{2.9cm}p{2.2cm}rrp{2.3cm}p{2.3cm}p{4.0cm}}
+\toprule
+Mask configuration & Allowed-edge density & ECG-leading timing & SBP MAE & DBP MAE & Window-weighted $\Delta$ MAE vs full (SBP/DBP) & Subject-paired Holm $p$ (SBP/DBP) & Interpretation \\
+\midrule
+No-delay-band cross-attention & Not sparse & No & 5.25 & 3.51 & +0.99 / +0.40 & $<0.001$ / $<0.001$ & Search-space control without a delay prior \\
+Fixed-uniform aggregation within the default delay band & Same admissible edges as the default band & Yes & 4.51 & 3.27 & +0.25 / +0.16 & $<0.001$ / $<0.001$ & The physiological band alone is insufficient without learned within-band edge weighting \\
+Degree-preserving random rewiring & Exactly preserves the default row and column degree vectors & No & 5.63 & 3.65 & +1.37 / +0.54 & $<0.001$ / $<0.001$ & Sparse graph capacity alone does not recover delay-aware performance \\
+Same-width shifted band & 452 edges on the same 113 ECG anchors used by the equal-width location sweep & Wrong delay region & 5.52 & 3.65 & +1.25 / +0.55 & $<0.001$ / $<0.001$ & Moving an otherwise equal-capacity band away from plausible pulse-arrival timing is suboptimal \\
+Zero-centered nonzero local mask & 494 natural-boundary edges; zero lag excluded & No & 5.40 & 3.54 & +1.14 / +0.43 & $<0.001$ / $<0.001$ & Generic local cross-modal proximity is insufficient \\
+PPG-leading mirror delay band & Same parameters and total edge count as the default band & No; encodes the opposite ordering & 4.82 & 3.45 & +0.56 / +0.34 & $<0.001$ / $<0.001$ & Reversing the ECG-leading relation weakens the matched backbone \\
+Default delay-banded asymmetric attention (PhysioCAT) & Natural boundary-aware support & Yes & 4.26 & 3.11 & -- / -- & -- / -- & Default PhysioCAT mask \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+
+
+\begin{table}[H]
+\centering
+\caption{Complete held-out-subject paired comparison family. Positive reductions are comparator MAE minus PhysioCAT MAE; confidence intervals are subject-cluster bootstrap intervals and $p$ values are two-sided Wilcoxon tests with Holm adjustment across the fixed 22-test family.}
+\label{tab:paired_tests}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllrrrr}
+\toprule
+Cohort & Comparator & Outcome & MAE reduction (mmHg) & 95\% CI & Holm-adjusted $p$ & Rank-biserial effect \\
+\midrule
+PulseDB-Vital & No-delay-band cross-attention & SBP & 1.01 & [0.96, 1.07] & $<0.001$ & 0.67 \\
+PulseDB-Vital & No-delay-band cross-attention & DBP & 0.42 & [0.38, 0.45] & $<0.001$ & 0.47 \\
+PulseDB-Vital & MuFuBP-Net & SBP & 0.87 & [0.81, 0.93] & $<0.001$ & 0.56 \\
+PulseDB-Vital & MuFuBP-Net & DBP & 0.28 & [0.25, 0.32] & $<0.001$ & 0.30 \\
+PulseDB-Vital & Fixed-uniform aggregation within the default delay band & SBP & 0.26 & [0.22, 0.30] & $<0.001$ & 0.28 \\
+PulseDB-Vital & Fixed-uniform aggregation within the default delay band & DBP & 0.16 & [0.14, 0.19] & $<0.001$ & 0.26 \\
+PulseDB-Vital & PPG-leading mirror delay band & SBP & 0.57 & [0.53, 0.62] & $<0.001$ & 0.49 \\
+PulseDB-Vital & PPG-leading mirror delay band & DBP & 0.34 & [0.32, 0.37] & $<0.001$ & 0.50 \\
+PulseDB-Vital & Zero-centered nonzero local mask & SBP & 1.16 & [1.10, 1.22] & $<0.001$ & 0.74 \\
+PulseDB-Vital & Zero-centered nonzero local mask & DBP & 0.44 & [0.40, 0.47] & $<0.001$ & 0.49 \\
+PulseDB-Vital & Shifted offsets 9--12 (516--828 ms support) & SBP & 1.28 & [1.23, 1.35] & $<0.001$ & 0.78 \\
+PulseDB-Vital & Shifted offsets 9--12 (516--828 ms support) & DBP & 0.55 & [0.51, 0.59] & $<0.001$ & 0.58 \\
+PulseDB-Vital & Degree-preserving random rewiring & SBP & 1.39 & [1.32, 1.44] & $<0.001$ & 0.80 \\
+PulseDB-Vital & Degree-preserving random rewiring & DBP & 0.54 & [0.51, 0.58] & $<0.001$ & 0.58 \\
+PulseDB-MIMIC & No-delay-band cross-attention & SBP & 1.48 & [1.40, 1.56] & $<0.001$ & 0.75 \\
+PulseDB-MIMIC & No-delay-band cross-attention & DBP & 0.70 & [0.65, 0.75] & $<0.001$ & 0.62 \\
+PulseDB-MIMIC & MuFuBP-Net & SBP & 1.23 & [1.16, 1.31] & $<0.001$ & 0.65 \\
+PulseDB-MIMIC & MuFuBP-Net & DBP & 0.60 & [0.54, 0.65] & $<0.001$ & 0.53 \\
+MIMIC-BP & No-delay-band cross-attention & SBP & 1.62 & [1.52, 1.72] & $<0.001$ & 0.76 \\
+MIMIC-BP & No-delay-band cross-attention & DBP & 0.82 & [0.75, 0.88] & $<0.001$ & 0.66 \\
+MIMIC-BP & MuFuBP-Net & SBP & 1.15 & [1.04, 1.25] & $<0.001$ & 0.58 \\
+MIMIC-BP & MuFuBP-Net & DBP & 0.62 & [0.54, 0.68] & $<0.001$ & 0.50 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Input-quality validity, inclusion sensitivity, and quality-aware deferral on PulseDB-Vital. All performance rows use the frozen subject-grouped outer models.}
+\label{tab:retention_sensitivity}
+\label{tab:rejection}
+\label{tab:sqi_reference_validation}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\textbf{A. Retention-rule and subject-cap sensitivity}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrr}
+\toprule
+Evaluation view & Subjects & Windows & SBP MAE & DBP MAE \\
+\midrule
+Basic paired/target validity; no SQI threshold & 2{,}714 & 207{,}568 & 4.31 & 3.16 \\
+Relaxed joint SQI (min 0.30; max 0.45) & 2{,}714 & 200{,}124 & 4.29 & 3.14 \\
+Default joint SQI (min 0.40; max 0.55) & 2{,}714 & 186{,}252 & 4.26 & 3.11 \\
+Stricter joint SQI (min 0.50; max 0.65) & 2{,}682 & 157{,}079 & 4.23 & 3.05 \\
+Default joint SQI; 48-window cap & 2{,}714 & 124{,}929 & 4.26 & 3.11 \\
+Default joint SQI; no subject cap & 2{,}714 & 193{,}533 & 4.26 & 3.11 \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.45em}
+\textbf{B. Quality-aware deferral}\\[0.25em]
+\begin{tabular}{lrrrr}
+\toprule
+Deferred fraction & Remaining coverage & Remaining windows & SBP MAE & DBP MAE \\
+\midrule
+0\% & 100\% & 186{,}252 & 4.26 & 3.11 \\
+5\% & 95\% & 176{,}939 & 4.25 & 3.08 \\
+10\% & 90\% & 167{,}627 & 4.24 & 3.07 \\
+15\% & 85\% & 158{,}314 & 4.23 & 3.05 \\
+20\% & 80\% & 149{,}002 & 4.22 & 3.03 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.45em}
+\textbf{C. Blinded paired-waveform quality review}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{rrrrrrr}
+\toprule
+Windows & Subjects & Usable & Rater agreement & Cohen $\kappa$ & Min-SQI AUC & Rule sensitivity / specificity \\
+\midrule
+1{,}200 & 968 & 89.2\% & 0.932 & 0.660 & 0.986 & 0.947 / 0.862 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Performance across fixed reference-BP strata on PulseDB-Vital. Strata were defined before analysis and retain the same out-of-fold PhysioCAT predictions; values are window-weighted.}
+\label{tab:conditional_bp}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrrrrrr}
+\toprule
+Outcome & Reference stratum & Subjects & Windows & Reference mean & ME & MAE & SDE \\
+\midrule
+SBP & $<90$ & 726 & 963 & 83.2 & 2.29 & 4.74 & 5.67 \\
+SBP & 90--109 & 2{,}377 & 20{,}100 & 104.3 & 1.26 & 4.42 & 5.53 \\
+SBP & 110--129 & 2{,}709 & 92{,}927 & 121.0 & 0.43 & 4.20 & 5.38 \\
+SBP & 130--149 & 2{,}693 & 62{,}871 & 137.7 & -0.38 & 4.26 & 5.47 \\
+SBP & 150--179 & 2{,}137 & 8{,}834 & 157.5 & -1.32 & 4.49 & 5.63 \\
+SBP & $\geq 180$ & 478 & 557 & 189.4 & -2.97 & 5.36 & 6.20 \\
+DBP & $<50$ & 1{,}139 & 1{,}666 & 47.0 & 1.38 & 3.41 & 4.07 \\
+DBP & 50--69 & 2{,}711 & 104{,}763 & 63.1 & 0.46 & 3.13 & 3.98 \\
+DBP & 70--89 & 2{,}709 & 76{,}282 & 76.3 & -0.21 & 3.05 & 3.90 \\
+DBP & 90--109 & 1{,}662 & 3{,}133 & 95.6 & -1.12 & 3.36 & 4.15 \\
+DBP & $\geq 110$ & 373 & 408 & 118.5 & -2.00 & 3.76 & 4.39 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Apparent-PAT interaction across the fixed timing prior. Apparent PAT is a post-retention descriptive variable and does not select windows or alter inference. Parentheses show comparator MAE minus PhysioCAT MAE; positive values favor PhysioCAT.}
+\label{tab:pat_interaction}
+\scriptsize
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrrr}
+\toprule
+Apparent-PAT group & Model & Windows & SBP MAE ($\Delta$) & DBP MAE ($\Delta$) \\
+\midrule
+Detected, 120--450 ms & PhysioCAT & 173{,}379 & 4.21 (+0.00) & 3.07 (+0.00) \\
+Detected, 120--450 ms & Matched no-delay & 173{,}379 & 5.23 (+1.01) & 3.50 (+0.43) \\
+Detected, 120--450 ms & PPG-leading mirror band & 173{,}379 & 4.78 (+0.57) & 3.43 (+0.36) \\
+Detected, 120--450 ms & Zero-centered nonzero local & 173{,}379 & 5.39 (+1.17) & 3.53 (+0.46) \\
+Detected, outside 120--450 ms & PhysioCAT & 4{,}864 & 4.45 (+0.00) & 3.32 (+0.00) \\
+Detected, outside 120--450 ms & Matched no-delay & 4{,}864 & 5.24 (+0.78) & 3.58 (+0.26) \\
+Detected, outside 120--450 ms & PPG-leading mirror band & 4{,}864 & 4.94 (+0.49) & 3.55 (+0.23) \\
+Detected, outside 120--450 ms & Zero-centered nonzero local & 4{,}864 & 5.42 (+0.97) & 3.56 (+0.24) \\
+Not detected & PhysioCAT & 8{,}009 & 5.22 (+0.00) & 3.82 (+0.00) \\
+Not detected & Matched no-delay & 8{,}009 & 5.77 (+0.55) & 3.81 (-0.01) \\
+Not detected & PPG-leading mirror band & 8{,}009 & 5.63 (+0.41) & 3.91 (+0.09) \\
+Not detected & Zero-centered nonzero local & 8{,}009 & 5.77 (+0.55) & 3.79 (-0.03) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Source-model and external-protocol validation before and after zero-shot transfer.}
+\label{tab:source_seed_stability}
+\label{tab:mimic_identity}
+\label{tab:source_model_validation}
+\scriptsize
+\textbf{A. Frozen PulseDB-Vital source split and internal validation}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & Train subjects & Train windows & Validation subjects & Validation windows & SBP MAE & DBP MAE \\
+\midrule
+PhysioCAT & 2{,}442 & 167{,}483 & 272 & 18{,}769 & 4.32 & 3.06 \\
+Matched no-delay & 2{,}442 & 167{,}483 & 272 & 18{,}769 & 5.41 & 3.53 \\
+MuFuBP-Net & 2{,}442 & 167{,}483 & 272 & 18{,}769 & 5.00 & 3.41 \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.45em}
+\textbf{B. Zero-shot source-training-seed stability}\\[0.25em]
+\begin{tabular}{llrrr}
+\toprule
+Target protocol & Source model & Seeds & SBP MAE & DBP MAE \\
+\midrule
+PulseDB-MIMIC & PhysioCAT & 3 & $4.96 \pm 0.04$ & $3.54 \pm 0.02$ \\
+PulseDB-MIMIC & Matched no-delay & 3 & $6.41 \pm 0.03$ & $4.19 \pm 0.03$ \\
+PulseDB-MIMIC & MuFuBP-Net & 3 & $6.15 \pm 0.02$ & $4.12 \pm 0.02$ \\
+MIMIC-BP & PhysioCAT & 3 & $4.81 \pm 0.03$ & $3.41 \pm 0.01$ \\
+MIMIC-BP & Matched no-delay & 3 & $6.43 \pm 0.07$ & $4.22 \pm 0.01$ \\
+MIMIC-BP & MuFuBP-Net & 3 & $6.00 \pm 0.04$ & $4.05 \pm 0.03$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.45em}
+\textbf{C. Identity separation of the two MIMIC-derived target protocols}\\[0.25em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrr}
+\toprule
+Target protocols & Cohort A subjects & Cohort B subjects & Shared patient hashes & Shared record hashes \\
+\midrule
+PulseDB-MIMIC / MIMIC-BP & 2{,}201 & 1{,}524 & 0 & 0 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Target-reference construction and sensitivity on PulseDB-Vital. The blinded review in panel E used a fixed-seed, threshold-enriched sample spanning four ABP-SQI strata; its usable percentage describes the review sample rather than cohort prevalence.}
+\label{tab:label_source_agreement}
+\label{tab:target_formation_selection}
+\label{tab:repository_scalar_sensitivity}
+\label{tab:abp_reference_quality}
+\scriptsize
+\setlength{\tabcolsep}{2.8pt}
+\textbf{A. Concordance of synchronized ABP-beat targets with repository scalar references}\\[0.20em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrlrrr}
+\toprule
+Scope & Outcome & Windows & Alternative reference & Bias & MAE & SD of difference \\
+\midrule
+target-formed candidate pool & SBP & 225{,}536 & repository\_scalar & -0.01 & 0.38 & 0.48 \\
+target-formed candidate pool & DBP & 225{,}536 & repository\_scalar & 0.01 & 0.29 & 0.36 \\
+final retained cohort & SBP & 186{,}252 & repository\_scalar & -0.01 & 0.38 & 0.48 \\
+final retained cohort & DBP & 186{,}252 & repository\_scalar & 0.01 & 0.29 & 0.36 \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.25em}
+\textbf{B. Target-formation comparison}\\[0.20em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrp{3.0cm}p{3.0cm}p{2.6cm}r}
+\toprule
+Group & Paired candidates & Repository label available & Repository SBP median [IQR] & Repository DBP median [IQR] & Age median [IQR] & Female \\
+\midrule
+Target formed & 225{,}536 & 225{,}536 (100.0\%) & 125.9 [116.9--135.4] & 68.3 [62.7--74.4] & 61 [51--69] & 36.0\% \\
+Target-formation failure & 9{,}531 & 8{,}451 (88.7\%) & 126.3 [117.2--135.5] & 68.4 [62.9--74.5] & 61 [52--70] & 36.6\% \\
+\bottomrule
+\end{tabular}}
+\vspace{0.25em}
+
+\begin{tabular}{lp{4.0cm}p{4.0cm}r}
+\toprule
+Group & Min-SQI median [IQR] & RR irregularity median [IQR] & Max $|$SMD$|$ \\
+\midrule
+Target formed & 0.67 [0.55--0.77] & 0.13 [0.09--0.18] & 0.00 \\
+Target-formation failure & 0.63 [0.51--0.74] & 0.14 [0.10--0.19] & 0.22 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.25em}
+\textbf{C. Retained-cohort sensitivity to the repository scalar reference}\\[0.20em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Outcome & Subjects & Windows & Aligned-target MAE & Repository-scalar MAE & Change \\
+\midrule
+PhysioCAT & SBP & 2{,}714 & 186{,}252 & 4.26 & 4.28 & +0.02 \\
+PhysioCAT & DBP & 2{,}714 & 186{,}252 & 3.11 & 3.12 & +0.01 \\
+Matched no-delay & SBP & 2{,}714 & 186{,}252 & 5.25 & 5.27 & +0.02 \\
+Matched no-delay & DBP & 2{,}714 & 186{,}252 & 3.51 & 3.53 & +0.01 \\
+MuFuBP-Net & SBP & 2{,}714 & 186{,}252 & 5.10 & 5.12 & +0.02 \\
+MuFuBP-Net & DBP & 2{,}714 & 186{,}252 & 3.38 & 3.39 & +0.01 \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.25em}
+\textbf{D. Reference-ABP quality sensitivity}\\[0.20em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrccc}
+\toprule
+Evaluation set & Windows & Median ABP SQI & PhysioCAT & Matched no-delay & MuFuBP-Net \\
+\midrule
+All retained windows & 186{,}252 & 0.67 & 4.26/3.11 & 5.25/3.51 & 5.10/3.38 \\
+ABP SQI $\geq$ 0.42 & 182{,}642 & 0.67 & 4.26/3.10 & 5.24/3.51 & 5.09/3.37 \\
+ABP SQI $\geq$ 0.55 & 154{,}531 & 0.70 & 4.24/3.06 & 5.18/3.47 & 5.02/3.33 \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.25em}
+\textbf{E. Blinded reference-ABP waveform review}\\[0.20em]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+Retained ABP SQI median [IQR] & Below 0.42 & Reviewed windows / subjects & Usable & Agreement / $\kappa$ & ABP-SQI AUC & Sensitivity / specificity \\
+\midrule
+0.67 [0.58--0.75] & 3{,}610 (1.9\%) & 800 / 678 & 79.0\% & 0.866 / 0.608 & 0.907 & 0.875 / 0.720 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+
+
+\noindent The fixed-seed balanced analysis included 1{,}024 windows from 256 subjects (4 per subject), sampled from the PAT-detected outer-test windows.
+
+\begin{table}[H]
+\centering
+\caption{Descriptive association between expected attention delay and the offline apparent-PAT estimate. Observed intervals use subject-cluster bootstrap; null ranges summarize permutation or random-weight distributions.}
+\label{tab:attention_association}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrrr}
+\toprule
+Analysis & Metric & Estimate & 95\% interval / null range & Windows \\
+\midrule
+Observed sparse attention & Pearson r: apparent PAT vs expected attention delay & 0.586 & [0.543, 0.626] & 1{,}024 \\
+Within-subject centered association & Pearson r after subject-mean centering & 0.605 & [0.557, 0.651] & 1{,}024 \\
+Window-level PAT permutation & Null Pearson r across 100 permutations & -0.002 & [-0.057, 0.078] & 1{,}024 \\
+Within-subject window permutation & Null centered Pearson r across 100 permutations & 0.008 & [-0.064, 0.081] & 1{,}024 \\
+20 band-constrained random-weight seeds & Null Pearson r across random weights & -0.004 & [-0.047, 0.057] & 1{,}024 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+
+
+\end{document}

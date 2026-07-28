@@ -1,0 +1,3 @@
+evaluation_scope,subjects,outer_folds,mask_seeds,subset_selection_seed,outcome,window_mae_mean,window_mae_sd,subject_mae_mean,subject_mae_sd
+independently trained five-fold random-mask topology replication,2714,5,20,,DBP,3.624188,0.040882,3.640894,0.039387
+independently trained five-fold random-mask topology replication,2714,5,20,,SBP,5.638239,0.051890,5.671444,0.053277

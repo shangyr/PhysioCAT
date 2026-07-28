@@ -1,0 +1,5 @@
+profile_id,platform,runtime,batch_size,warmup_windows,timed_windows,timer,scope
+h800_fp16,NVIDIA H800 80 GB,PyTorch FP16,1,500,5000,CUDA event / perf_counter,post-acquisition processing; signal acquisition excluded
+xeon_onnx_fp32,Intel Xeon Gold 6338,ONNX Runtime FP32,1,500,5000,perf_counter,post-acquisition processing; signal acquisition excluded
+orin_trt_fp16,Jetson Orin NX 16 GB,TensorRT FP16,1,500,5000,CUDA event / perf_counter,post-acquisition processing; signal acquisition excluded
+orin_trt_int8,Jetson Orin NX 16 GB,TensorRT INT8,1,500,5000,CUDA event / perf_counter,post-acquisition processing; signal acquisition excluded

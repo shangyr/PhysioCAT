@@ -1,0 +1,84 @@
+kind: experiment
+name: delay_prior_mechanism_controls
+cohort_config:
+- configs/data/pulsedb_vital.yaml
+model_configs:
+- configs/model/physiocat.yaml
+- configs/model/matched_no_delay.yaml
+- configs/model/uniform_delay_band.yaml
+evaluation_config:
+- configs/evaluation/subject_grouped_5fold.yaml
+- configs/evaluation/random_mask_stability.yaml
+controls:
+  independently_trained_random_mask_seeds:
+  - 82000
+  - 82001
+  - 82002
+  - 82003
+  - 82004
+  - 82005
+  - 82006
+  - 82007
+  - 82008
+  - 82009
+  - 82010
+  - 82011
+  - 82012
+  - 82013
+  - 82014
+  - 82015
+  - 82016
+  - 82017
+  - 82018
+  - 82019
+  fixed_random_mask_initialization_seed: 42
+  fixed_random_mask_data_order_seed: 42
+  uniform_within_band_aggregation: true
+  zero_centered_nonzero_local_offsets:
+  - -2
+  - -1
+  - 1
+  - 2
+  shifted_offset_band:
+  - 9
+  - 12
+  shifted_patch_support_ms:
+  - 516
+  - 828
+  equal_width_common_support_offset_bands:
+  - - 2
+    - 5
+  - - 3
+    - 6
+  - - 4
+    - 7
+  - - 9
+    - 12
+  common_ecg_anchor_rows:
+  - 0
+  - 112
+  edges_per_band: 452
+  normalization_factorial:
+  - patch_local
+  - window_robust
+  report_realized_density: true
+  pat_permutation_seeds: 100
+  within_subject_permutation_seeds: 100
+  attention_edge_ablation: true
+  timing_perturbations:
+    token_aligned_ppg_shift:
+      seed: 160000
+      minimum_absolute_shift_tokens: 3
+      maximum_absolute_shift_tokens: 10
+      patch_samples: 16
+      sample_rate_hz: 250
+      direction: random_bidirectional
+      boundary_policy: circular_token_roll
+    cross_subject_pairing:
+      seed: 160001
+      donor_constraint: different_subject
+    ppg_time_reversal:
+      operation: reverse_sample_order
+outputs:
+- artifacts/metrics/mechanism
+- artifacts/attention

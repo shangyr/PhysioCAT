@@ -1,0 +1,5 @@
+profile_id,platform,runtime,forward_latency_ms,end_to_end_latency_ms,throughput_windows_per_s,compute_only_ratio_vs_8s
+h800_fp16,NVIDIA H800 80 GB,PyTorch FP16,1.860000,5.940000,168.350168,1346.801347
+xeon_onnx_fp32,Intel Xeon Gold 6338,ONNX Runtime FP32,31.700000,74.600000,13.404826,107.238606
+orin_trt_fp16,Jetson Orin NX 16 GB,TensorRT FP16,8.940000,19.800000,50.505051,404.040404
+orin_trt_int8,Jetson Orin NX 16 GB,TensorRT INT8,5.210000,12.600000,79.365079,634.920635

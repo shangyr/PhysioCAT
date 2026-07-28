@@ -1,0 +1,10 @@
+cohort,quantity,value
+pulsedb_vital,source_indexed_segments,240428
+pulsedb_vital,paired_waveform_crops,235067
+pulsedb_vital,target_formed_candidates,225536
+pulsedb_vital,target_formation_failures,14892
+pulsedb_vital,retained_windows,186252
+pulsedb_vital,retained_subjects,2714
+pulsedb_vital,PAT_detected_retained_windows,178243
+pulsedb_vital,PAT_missing_retained_windows,8009
+pulsedb_vital,PAT_outside_120_450_retained_windows,4864

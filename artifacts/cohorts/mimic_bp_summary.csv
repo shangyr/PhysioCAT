@@ -1,0 +1,10 @@
+cohort,quantity,value
+mimic_bp,source_indexed_segments,47059
+mimic_bp,paired_waveform_crops,45279
+mimic_bp,target_formed_candidates,42822
+mimic_bp,target_formation_failures,4237
+mimic_bp,retained_windows,39498
+mimic_bp,retained_subjects,1524
+mimic_bp,PAT_detected_retained_windows,37905
+mimic_bp,PAT_missing_retained_windows,1593
+mimic_bp,PAT_outside_120_450_retained_windows,1105

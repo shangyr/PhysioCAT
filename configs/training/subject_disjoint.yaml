@@ -1,0 +1,43 @@
+kind: training
+optimizer:
+  name: AdamW
+  learning_rate: 0.0006
+  weight_decay: 0.0
+schedule:
+  name: cosine_with_warmup
+  warmup_epochs: 5
+  maximum_epochs: 80
+early_stopping:
+  metric: validation_mean_component_MAE
+  patience: 12
+  restore_best: true
+contrastive:
+  embedding_dim: 128
+  projection_head: separate training-only two-layer modality heads
+  projection_dim: 128
+  discard_projection_heads_before_inference: true
+  components:
+  - ECG intra-modal
+  - PPG intra-modal
+  - ECG-PPG cross-modal
+  component_weights:
+  - 1.0
+  - 1.0
+  - 0.5
+  negative_policy: different-subject only within batch
+  temperature: 0.1
+seeds:
+- 42
+- 1337
+- 2025
+configuration_selection:
+  scope: fixed_three_candidate_grid_resolved_on_fold_local_validation
+  registry: artifacts/logs/training/model_configuration_registry.csv
+  selection_log: artifacts/logs/training/fold_local_training_setting_selection.csv
+  outer_test_metrics_available: false
+fold_local:
+  input_view: read from the frozen model registry
+  input_views_fit_cohort_statistics: false
+  pretraining_policy: read pretrain_epochs from the model registry
+  validation_subjects_disjoint: true
+  validation_role: training_setting_early_stopping_and_checkpoint_selection

@@ -1,0 +1,11 @@
+figure_panel,display_label,subgroup_family,subgroup,definition,n_subjects,n_windows,sbp_mae,dbp_mae
+A,Age 18-40,Age,18--40,18 <= age <= 40 years,182,12123,4.261751,3.176526
+A,Age 41-65,Age,41--65,41 <= age <= 65 years,1554,107135,4.240937,3.109106
+A,Age 66+,Age,>=66,age >= 66 years,978,66994,4.298989,3.093953
+A,Female,Sex,Female,sex recorded as female,985,67565,4.213195,3.053334
+A,Male,Sex,Male,sex recorded as male,1729,118687,4.291624,3.139189
+A,Lower-BP windows,BP,Lower-BP windows,"SBP < 130 and DBP < 80 mmHg; window stratum, not a clinical diagnosis",2710,111741,4.238227,3.128233
+A,Elevated-BP windows,BP,Elevated-BP windows,"SBP >= 130 or DBP >= 80 mmHg; window stratum, not a clinical diagnosis",2703,74511,4.300583,3.077768
+A,Normal rhythm,Rhythm,Regular,regular-rhythm windows,2696,180213,4.254668,3.104971
+A,Irregular rhythm,Rhythm,RR-irregular,RR-irregular windows,274,6039,4.516973,3.199740
+A,Lowest SQI,SQI,Lower,lowest retained signal-quality stratum,2714,96971,4.340037,3.263769

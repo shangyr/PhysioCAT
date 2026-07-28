@@ -1,0 +1,40 @@
+kind: model
+name: cnn_bilstm
+inputs:
+- ECG
+- PPG
+input_view: window_robust
+training:
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_objective: mean(SBP_MAE, DBP_MAE)
+  checkpoint_rule: minimum subject-disjoint validation objective
+output:
+  targets:
+  - SBP
+  - DBP
+  loss: Huber_plus_order_penalty
+  loss_parameters:
+    huber_delta_mmHg: 5.0
+    minimum_sbp_minus_dbp_mmHg: 0.0
+    order_weight: 0.15
+architecture:
+  hidden_dim: 128
+  multiscale_convolution_kernels:
+  - 5
+  - 9
+  - 17
+  - 33
+  bidirectional_lstm_layers: 2
+  self_attention_heads: 6
+  attentive_statistics_pooling: true
+training_protocol:
+  contrastive_pretraining: false
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_subjects_disjoint: true
+  scheduler: cosine_with_warmup
+implementation:
+  status: canonical_comparator
+  source: common CNN-BiLSTM design
+  common_protocol_adaptations:
+  - same windows
+  - same early stopping and fixed training protocol

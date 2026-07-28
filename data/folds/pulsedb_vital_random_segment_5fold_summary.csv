@@ -1,0 +1,6 @@
+fold_id,split_seed,train_windows,validation_windows,test_windows,train_subjects,validation_subjects,test_subjects,train_test_overlap_subjects,train_validation_overlap_subjects,validation_test_overlap_subjects,test_subject_overlap_pct,test_window_ids_sha256,prediction_role
+0,42,111750,37251,37251,2713,2705,2702,2701,2705,2698,99.962990,0234d6a19b4de04793710deeab956c6c9b53f8736ffd5290ec7fbe63da2ada84,out_of_fold_test
+1,42,111751,37250,37251,2714,2704,2705,2705,2704,2700,100.000000,60388e1c3af4854aef75ad305ad366929b78c7f758f0b2ec959e08d6f46229b6,out_of_fold_test
+2,42,111752,37250,37250,2713,2704,2704,2704,2703,2697,100.000000,df3c99e80ebad21008ac3a31820310f5450e649d083079a2218b7ec75fae00de,out_of_fold_test
+3,42,111752,37250,37250,2711,2705,2704,2702,2703,2698,99.926036,ccdcfb9ed67e327688bd1ff671fa85a364f9c81db3493b6a2bd4b79123bb9b36,out_of_fold_test
+4,42,111751,37251,37250,2712,2702,2705,2704,2701,2696,99.963031,bb242fee6a2a4506aa9e83565fc259b7bd9be4d7bdb1a6b88c222d291d95effa,out_of_fold_test

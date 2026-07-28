@@ -1,0 +1,11 @@
+model,perturbation,sbp_mae,dbp_mae,physiocat_sbp_mae,physiocat_dbp_mae,n_windows,prediction_column,sbp_degradation_mmhg,dbp_degradation_mmhg
+PhysioCAT,,4.263173,3.108044,4.263173,3.108044,186252,physiocat_unperturbed,,
+PhysioCAT,Cross-subject ECG-PPG pairing,8.779567,5.237414,4.263173,3.108044,186252,physiocat_cross_subject,4.516394,2.129370
+PhysioCAT,Implausible delay mask,7.657704,4.710288,4.263173,3.108044,186252,physiocat_implausible,3.394531,1.602244
+PhysioCAT,PPG time reversal,8.471042,5.075124,4.263173,3.108044,186252,physiocat_reversal,4.207869,1.967080
+PhysioCAT,Token-aligned circular PPG shift,8.324718,4.968021,4.263173,3.108044,186252,physiocat_token_shift,4.061545,1.859977
+No-delay-band cross-attention,,5.250650,3.512501,,,186252,no_delay_unperturbed,,
+No-delay-band cross-attention,Cross-subject ECG-PPG pairing,7.372160,4.693579,,,186252,no_delay_cross_subject,2.121510,1.181078
+No-delay-band cross-attention,Implausible delay mask,6.796947,4.337089,,,186252,no_delay_implausible,1.546297,0.824588
+No-delay-band cross-attention,PPG time reversal,7.210705,4.549156,,,186252,no_delay_reversal,1.960055,1.036655
+No-delay-band cross-attention,Token-aligned circular PPG shift,7.037201,4.529997,,,186252,no_delay_token_shift,1.786551,1.017496

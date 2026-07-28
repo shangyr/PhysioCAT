@@ -1,0 +1,37 @@
+kind: model
+name: te_sagru
+inputs:
+- ECG
+- PPG
+input_view: window_robust
+training:
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_objective: mean(SBP_MAE, DBP_MAE)
+  checkpoint_rule: minimum subject-disjoint validation objective
+output:
+  targets:
+  - SBP
+  - DBP
+  loss: Huber_plus_order_penalty
+  loss_parameters:
+    huber_delta_mmHg: 5.0
+    minimum_sbp_minus_dbp_mmHg: 0.0
+    order_weight: 0.15
+architecture:
+  hidden_dim: 96
+  multiscale_temporal_branches: 4
+  cross_attention_heads: 4
+  transformer_layers: 2
+  attention_gated_gru_layers: 2
+training_protocol:
+  contrastive_pretraining: false
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_subjects_disjoint: true
+  scheduler: cosine_with_warmup
+implementation:
+  status: paper_aligned_common_protocol_implementation
+  source: published TE-SAGRU specification
+  common_protocol_adaptations:
+  - common preprocessing
+  - two-component BP output
+  - same subject folds and fixed training protocol

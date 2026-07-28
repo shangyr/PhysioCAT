@@ -1,0 +1,2 @@
+cohort_a,cohort_b,cohort_a_subjects,cohort_b_subjects,shared_source_patient_hashes,shared_source_record_hashes,interpretation
+pulsedb_mimic,mimic_bp,2201,1524,0,0,patient-disjoint retained target protocols within one MIMIC-III waveform ecosystem; not independent clinical sites

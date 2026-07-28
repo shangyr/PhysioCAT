@@ -1,0 +1,13 @@
+cohort,signal_or_label,selected_field_contract,upstream_status,study_role
+PulseDB-Vital,ECG,Subj_Wins/ECG_Record then ECG_Record; fallback Subj_Wins/ECG_Raw then ECG_Raw,unfiltered paired source field; exact selected alias is written to the adapter manifest,model input and ECG SQI
+PulseDB-Vital,PPG,Subj_Wins/PPG_Record then PPG_Record; fallback Subj_Wins/PPG_Raw then PPG_Raw,unfiltered paired source field; affine-remapped PPG_Raw is admissible because model normalization and PPG SQI are affine invariant,"model input, PPG SQI, and offline PAT audit"
+PulseDB-Vital,SBP/DBP,aligned 8 s ABP beat-extrema scalar,mean accepted beat maxima/minima from the synchronized reference ABP in the same deterministic 8 s crop,sole scalar supervised targets
+PulseDB-Vital,ABP,Subj_Wins/ABP_Record or ABP_Record; fallback ABP_Raw/ABP_F/ABP,reference waveform aligned to the ECG/PPG crop,"used only upstream to derive scalar targets; not a model input, SQI term, or post-target retention field"
+PulseDB-MIMIC,ECG,Subj_Wins/ECG_Record then ECG_Record; fallback Subj_Wins/ECG_Raw then ECG_Raw,unfiltered paired source field; exact selected alias is written to the adapter manifest,frozen-source input and ECG SQI
+PulseDB-MIMIC,PPG,Subj_Wins/PPG_Record then PPG_Record; fallback Subj_Wins/PPG_Raw then PPG_Raw,unfiltered paired source field with affine-invariant model/SQI transforms,frozen-source input and PPG SQI
+PulseDB-MIMIC,SBP/DBP,aligned 8 s ABP beat-extrema scalar,mean accepted beat maxima/minima from the synchronized reference ABP in the same deterministic 8 s crop,external scalar evaluation targets
+PulseDB-MIMIC,ABP,Subj_Wins/ABP_Record or ABP_Record; fallback ABP_Raw/ABP_F/ABP,reference waveform aligned to the ECG/PPG crop,"used only upstream to derive scalar targets; not a model input, SQI term, or target-domain tuning field"
+MIMIC-BP,ECG,signals/ecg then ECG/ecg fallback,curated waveform-dataset ECG field,frozen-source input and ECG SQI
+MIMIC-BP,PPG,signals/ppg then raw PPG/ppg/pleth fallback,curated waveform-dataset pulse field,frozen-source input and PPG SQI
+MIMIC-BP,SBP/DBP,labels/sbp and labels/dbp,curated scalar paired with the same released 8 s record,external scalar evaluation targets
+MIMIC-BP,ABP,signals/abp when available,optional reference waveform,"not used as model input, SQI term, checkpoint signal, or inference input"

@@ -1,0 +1,6 @@
+delay_band,model,sbp_mae,dbp_mae,n_windows,n_subjects,evaluation_scope,interpretation
+120-300 ms,delay_120_300,4.550169,3.275110,186252,2714,complete five-fold subject-grouped OOF,Narrow support-conservative band
+120-350 ms,delay_120_350,4.432329,3.185866,186252,2714,complete five-fold subject-grouped OOF,Strong but slightly restrictive
+120-450 ms,physiocat,4.263173,3.108044,186252,2714,complete five-fold subject-grouped OOF,Literature-guided fixed band
+80-550 ms,delay_80_550,4.446769,3.215856,186252,2714,complete five-fold subject-grouped OOF,Less restrictive
+Unconstrained,matched_no_delay,5.250650,3.512501,186252,2714,complete five-fold subject-grouped OOF,No physiological timing prior

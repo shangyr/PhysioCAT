@@ -1,0 +1,26 @@
+epoch,stage,training_loss,validation_mean_mae,artifact_scope
+1,contrastive,7.796472,,released functional replay fixture; not final subject-grouped outer-fold training
+2,contrastive,7.106766,,released functional replay fixture; not final subject-grouped outer-fold training
+3,contrastive,6.492646,,released functional replay fixture; not final subject-grouped outer-fold training
+4,contrastive,5.925012,,released functional replay fixture; not final subject-grouped outer-fold training
+5,contrastive,5.385092,,released functional replay fixture; not final subject-grouped outer-fold training
+6,supervised,4.918923,7.348351,released functional replay fixture; not final subject-grouped outer-fold training
+7,supervised,4.468489,7.121068,released functional replay fixture; not final subject-grouped outer-fold training
+8,supervised,4.112305,6.888638,released functional replay fixture; not final subject-grouped outer-fold training
+9,supervised,3.763148,6.679258,released functional replay fixture; not final subject-grouped outer-fold training
+10,supervised,3.460645,6.431595,released functional replay fixture; not final subject-grouped outer-fold training
+11,supervised,3.134220,6.201085,released functional replay fixture; not final subject-grouped outer-fold training
+12,supervised,2.836552,5.997403,released functional replay fixture; not final subject-grouped outer-fold training
+13,supervised,2.633266,5.758008,released functional replay fixture; not final subject-grouped outer-fold training
+14,supervised,2.391193,5.547741,released functional replay fixture; not final subject-grouped outer-fold training
+15,supervised,2.128412,5.375259,released functional replay fixture; not final subject-grouped outer-fold training
+16,supervised,1.948579,5.228015,released functional replay fixture; not final subject-grouped outer-fold training
+17,supervised,1.812239,5.056814,released functional replay fixture; not final subject-grouped outer-fold training
+18,supervised,1.666466,4.836141,released functional replay fixture; not final subject-grouped outer-fold training
+19,supervised,1.552024,4.691620,released functional replay fixture; not final subject-grouped outer-fold training
+20,supervised,1.398359,4.549485,released functional replay fixture; not final subject-grouped outer-fold training
+21,supervised,1.241890,4.356051,released functional replay fixture; not final subject-grouped outer-fold training
+22,supervised,1.117858,4.247942,released functional replay fixture; not final subject-grouped outer-fold training
+23,supervised,1.020175,4.067300,released functional replay fixture; not final subject-grouped outer-fold training
+24,supervised,0.942015,3.885281,released functional replay fixture; not final subject-grouped outer-fold training
+25,supervised,0.862979,3.774227,released functional replay fixture; not final subject-grouped outer-fold training

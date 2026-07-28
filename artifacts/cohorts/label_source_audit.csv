@@ -1,0 +1,13 @@
+cohort,scope,outcome,windows,target_source,target_windows,alternative_reference,alternative_minus_target_bias_mmhg,alternative_vs_target_mae_mmhg,alternative_minus_target_sd_mmhg
+pulsedb_vital,target-formed candidate pool,SBP,225536,aligned_8s_abp_beat_extrema,225536,repository_scalar,-0.010966,0.382033,0.478812
+pulsedb_vital,target-formed candidate pool,DBP,225536,aligned_8s_abp_beat_extrema,225536,repository_scalar,0.009842,0.287435,0.359861
+pulsedb_vital,final retained cohort,SBP,186252,aligned_8s_abp_beat_extrema,186252,repository_scalar,-0.011758,0.382101,0.478680
+pulsedb_vital,final retained cohort,DBP,186252,aligned_8s_abp_beat_extrema,186252,repository_scalar,0.009627,0.287515,0.359954
+pulsedb_mimic,target-formed candidate pool,SBP,198800,aligned_8s_abp_beat_extrema,198800,repository_scalar,-0.012481,0.382815,0.479548
+pulsedb_mimic,target-formed candidate pool,DBP,198800,aligned_8s_abp_beat_extrema,198800,repository_scalar,0.009561,0.287186,0.359831
+pulsedb_mimic,final retained cohort,SBP,164882,aligned_8s_abp_beat_extrema,164882,repository_scalar,-0.013261,0.383104,0.479935
+pulsedb_mimic,final retained cohort,DBP,164882,aligned_8s_abp_beat_extrema,164882,repository_scalar,0.009298,0.287006,0.359598
+mimic_bp,target-formed candidate pool,SBP,42822,curated_scalar_same_record,42822,optional_aligned_abp,0.009872,0.384411,0.481314
+mimic_bp,target-formed candidate pool,DBP,42822,curated_scalar_same_record,42822,optional_aligned_abp,-0.009020,0.287788,0.360266
+mimic_bp,final retained cohort,SBP,39498,curated_scalar_same_record,39498,optional_aligned_abp,0.009537,0.384984,0.482139
+mimic_bp,final retained cohort,DBP,39498,curated_scalar_same_record,39498,optional_aligned_abp,-0.008738,0.287530,0.359908

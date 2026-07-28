@@ -1,0 +1,53 @@
+me,mae,sde,rmse,pearson_r,within_5_pct,within_10_pct,within_15_pct,cohort,model,display_name,outcome,n_windows,n_subjects,evaluation_scope
+0.169452,4.607875,5.987349,5.989730,0.917276,63.277710,90.685738,98.027404,pulsedb_vital,without_sqi_fusion,Without SQI-aware fusion,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.162610,3.333364,4.272052,4.275134,0.900094,77.303868,97.537208,99.795975,pulsedb_vital,without_sqi_fusion,Without SQI-aware fusion,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.119574,6.092551,7.992325,7.993198,0.851566,51.507098,81.375234,93.637652,pulsedb_vital,without_delay_and_sqi,Without delay band and SQI-aware fusion,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.067209,3.961557,5.139471,5.139896,0.857444,70.040590,94.412946,99.109808,pulsedb_vital,without_delay_and_sqi,Without delay band and SQI-aware fusion,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.165029,4.263173,5.480929,5.483398,0.929554,66.325731,93.024504,98.864979,pulsedb_vital,physiocat,PhysioCAT,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.163813,3.108044,3.976065,3.979427,0.911728,80.421150,98.333978,99.886713,pulsedb_vital,physiocat,PhysioCAT,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.149015,5.250650,6.853790,6.855391,0.885616,57.621932,86.760411,96.334536,pulsedb_vital,matched_no_delay,Matched no-delay cross-attention,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.072155,3.512501,4.545634,4.546195,0.883655,75.475163,96.526212,99.579602,pulsedb_vital,matched_no_delay,Matched no-delay cross-attention,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.164443,4.675018,6.058644,6.060858,0.915527,62.482551,90.396345,97.967270,pulsedb_vital,without_pretraining,Without contrastive pretraining,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.160181,3.311970,4.244414,4.247424,0.901153,77.582523,97.640294,99.799734,pulsedb_vital,without_pretraining,Without contrastive pretraining,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.177846,4.449145,5.714324,5.717076,0.923988,64.375148,91.991495,98.618538,pulsedb_vital,physiocat_patch_local,Delay band + patch-local normalization,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.160212,3.230984,4.130925,4.134019,0.905849,78.718081,97.911432,99.854498,pulsedb_vital,physiocat_patch_local,Delay band + patch-local normalization,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.128422,5.401045,7.053374,7.054524,0.879764,56.372012,85.833172,95.932930,pulsedb_vital,matched_no_delay_patch_local,No-delay + patch-local normalization,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.077427,3.593315,4.642999,4.643632,0.879660,74.293430,96.206752,99.550072,pulsedb_vital,matched_no_delay_patch_local,No-delay + patch-local normalization,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.143620,4.823447,6.239415,6.241051,0.911025,60.957198,89.536757,97.674119,pulsedb_vital,ppg_leading_mirror,PPG-leading mirror delay band,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.150515,3.449637,4.414370,4.416923,0.894324,75.935829,97.175332,99.745506,pulsedb_vital,ppg_leading_mirror,PPG-leading mirror delay band,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.179970,4.870855,6.316789,6.319335,0.909091,60.697335,89.298370,97.517879,pulsedb_vital,unidirectional_delay,Unidirectional delay-banded attention,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.157560,3.493138,4.467064,4.469830,0.892101,75.362412,96.994932,99.718124,pulsedb_vital,unidirectional_delay,Unidirectional delay-banded attention,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.119469,5.404303,7.047431,7.048424,0.879900,56.296845,85.789683,95.961923,pulsedb_vital,direction_agnostic_local,Zero-centered nonzero local mask,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.063974,3.540039,4.582279,4.582713,0.882301,75.039194,96.446750,99.550609,pulsedb_vital,direction_agnostic_local,Zero-centered nonzero local mask,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.144937,5.516982,7.200462,7.201901,0.875431,55.563967,85.090093,95.594678,pulsedb_vital,shifted_offsets_9_12,Shifted offsets 9--12 (516--828 ms support),SBP,186252,2714,complete five-fold subject-grouped OOF
+0.085593,3.653728,4.742791,4.743551,0.875129,73.651827,95.847561,99.440006,pulsedb_vital,shifted_offsets_9_12,Shifted offsets 9--12 (516--828 ms support),DBP,186252,2714,complete five-fold subject-grouped OOF
+0.179758,4.505127,5.785039,5.787816,0.922267,63.692202,91.792303,98.480016,pulsedb_vital,offset_band_2_5_common,Equal-width offsets 2--5 (common support),SBP,186252,2714,complete five-fold subject-grouped OOF
+0.160447,3.255651,4.161867,4.164947,0.904500,78.422782,97.853446,99.838391,pulsedb_vital,offset_band_2_5_common,Equal-width offsets 2--5 (common support),DBP,186252,2714,complete five-fold subject-grouped OOF
+0.197622,4.331119,5.566039,5.569531,0.927443,65.729227,92.696991,98.763503,pulsedb_vital,offset_band_3_6_common,Equal-width offsets 3--6 (common support),SBP,186252,2714,complete five-fold subject-grouped OOF
+0.163972,3.183436,4.065215,4.068509,0.908402,79.368812,98.118678,99.872216,pulsedb_vital,offset_band_3_6_common,Equal-width offsets 3--6 (common support),DBP,186252,2714,complete five-fold subject-grouped OOF
+0.162206,4.501974,5.782754,5.785013,0.922365,63.843610,91.718747,98.496660,pulsedb_vital,offset_band_4_7_common,Equal-width offsets 4--7 (common support),SBP,186252,2714,complete five-fold subject-grouped OOF
+0.152392,3.248369,4.151384,4.154169,0.904842,78.413118,97.917875,99.859330,pulsedb_vital,offset_band_4_7_common,Equal-width offsets 4--7 (common support),DBP,186252,2714,complete five-fold subject-grouped OOF
+0.124277,5.631732,7.370972,7.372000,0.870108,54.697936,84.366342,95.217233,pulsedb_vital,attention_edge_ablation,Degree-preserving random rewiring,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.054477,3.646451,4.725467,4.725769,0.875826,73.721088,96.012929,99.462019,pulsedb_vital,attention_edge_ablation,Degree-preserving random rewiring,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.175341,4.514062,5.808203,5.810834,0.921726,63.721195,91.586668,98.433842,pulsedb_vital,uniform_delay_band,Fixed uniform delay-band aggregation,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.148532,3.266958,4.178114,4.180742,0.903800,78.218757,97.837339,99.843760,pulsedb_vital,uniform_delay_band,Fixed uniform delay-band aggregation,DBP,186252,2714,complete five-fold subject-grouped OOF
+-0.196795,8.539155,11.226721,11.228416,0.728257,38.680927,67.267466,83.952387,pulsedb_vital,ecg_only,ECG only,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.255582,5.735597,7.477739,7.482085,0.720810,53.740094,83.680175,94.928377,pulsedb_vital,ecg_only,ECG only,DBP,186252,2714,complete five-fold subject-grouped OOF
+-0.270296,7.088397,9.292737,9.296642,0.793166,45.388506,75.259863,89.993128,pulsedb_vital,ppg_only,PPG only,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.255558,4.492357,5.846875,5.852442,0.803961,64.580783,91.408414,98.184181,pulsedb_vital,ppg_only,PPG only,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.140960,5.983012,7.851904,7.853148,0.855561,52.279707,82.135494,94.019393,pulsedb_vital,early_concat,Early concatenation,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.058186,3.853459,5.007044,5.007369,0.863112,71.361381,94.958443,99.188734,pulsedb_vital,early_concat,Early concatenation,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.119481,6.186575,8.117774,8.118632,0.847267,50.813951,80.919400,93.302622,pulsedb_vital,late_average,Late averaging,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.063467,3.990233,5.195124,5.195498,0.854792,69.865558,94.266907,99.001353,pulsedb_vital,late_average,Late averaging,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.136631,5.894737,7.737692,7.738878,0.858875,52.893929,82.771192,94.315766,pulsedb_vital,gated_fusion,Gated fusion,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.072273,3.824947,4.972415,4.972927,0.864695,71.700707,95.059382,99.247793,pulsedb_vital,gated_fusion,Gated fusion,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.107344,5.881104,7.701028,7.701755,0.860080,52.957284,82.698172,94.411872,pulsedb_vital,se_fusion,SE-based fusion,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.100925,3.776365,4.900816,4.901842,0.867782,72.329425,95.324614,99.320276,pulsedb_vital,se_fusion,SE-based fusion,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.165095,4.550169,5.844631,5.846946,0.920812,63.279857,91.500762,98.385521,pulsedb_vital,delay_120_300,120--300 ms delay band,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.141827,3.275110,4.186977,4.189367,0.903495,78.022786,97.834117,99.838391,pulsedb_vital,delay_120_300,120--300 ms delay band,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.178655,4.432329,5.702526,5.705309,0.924272,64.652729,92.106930,98.549814,pulsedb_vital,delay_120_350,120--350 ms delay band,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.154085,3.185866,4.065802,4.068710,0.908260,79.147070,98.145523,99.882954,pulsedb_vital,delay_120_350,120--350 ms delay band,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.186367,4.446769,5.713746,5.716769,0.923934,64.422395,92.012435,98.602968,pulsedb_vital,delay_80_550,80--550 ms delay band,SBP,186252,2714,complete five-fold subject-grouped OOF
+0.158016,3.215856,4.106897,4.109924,0.906765,78.863583,98.034920,99.877048,pulsedb_vital,delay_80_550,80--550 ms delay band,DBP,186252,2714,complete five-fold subject-grouped OOF
+0.163774,7.383393,9.707930,9.709285,0.797662,43.888925,73.542834,88.750725,pulsedb_vital,timing_jitter_160ms,PPG timing jitter (160 ms SD),SBP,186252,2714,complete five-fold subject-grouped OOF
+0.058808,4.904406,6.385990,6.386244,0.800634,60.542169,89.011125,97.352512,pulsedb_vital,timing_jitter_160ms,PPG timing jitter (160 ms SD),DBP,186252,2714,complete five-fold subject-grouped OOF

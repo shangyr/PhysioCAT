@@ -1,0 +1,400 @@
+\pdfminorversion=7
+\documentclass[preprint,12pt]{elsarticle}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs,multirow,array,makecell}
+\usepackage{graphicx}
+\graphicspath{{./}}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{url}
+\urlstyle{same}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{placeins}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.80}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.72}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{5}
+\makeatother
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{pdflscape}
+\hypersetup{hidelinks}
+\pdfstringdefDisableCommands{%
+  \def\corref#1{}%
+  \def\cortext#1#2{}%
+  \def\ead#1{}%
+}
+\captionsetup{font=small,labelfont=bf}
+\setstretch{1.08}
+\emergencystretch=2em
+\makeatletter
+\def\ps@pprintTitle{%
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@empty}
+\makeatother
+
+\journal{Biomedical Signal Processing and Control}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{PhysioCAT: Physiological Delay-Banded Cross-Attention for Subject-Independent Cuffless Blood Pressure Estimation from ECG and PPG}
+
+\author[inst1]{Youren Shang}
+\author[inst1]{Ningyuan Zhang\corref{cor1}}
+\ead{25b910030@stu.hit.edu.cn}
+\cortext[cor1]{Corresponding author: Ningyuan Zhang.}
+\address[inst1]{eHealth Research Institute, School of Management, Harbin Institute of Technology, Harbin 150001, China}
+
+\begin{abstract}
+Subject-independent cuffless blood pressure (BP) estimation from electrocardiogram (ECG) and photoplethysmogram (PPG) seeks to infer BP in unseen individuals from noninvasive cardiovascular waveforms. ECG and peripheral PPG are temporally ordered signals, yet many fusion layers permit unconstrained cross-modal interactions that ignore the physiologically plausible delay between cardiac electrical activation and peripheral pulse arrival. We propose PhysioCAT, a model that encodes ECG-leading ordering and a plausible peripheral-pulse delay range as a delay-banded asymmetric cross-attention prior. Direct ECG--PPG attention is limited to ECG-leading patch pairs within a literature-guided 120--450 ms pulse-arrival envelope, while attention weights remain learnable inside that band. Evaluation used five-fold subject-grouped testing on 186{,}252 quality-controlled ECG--PPG windows from 2{,}714 PulseDB-Vital subjects, followed by frozen source-to-target transfer on two MIMIC-derived target protocols, PulseDB-MIMIC and MIMIC-BP. PhysioCAT achieved systolic and diastolic MAE of 4.26 and 3.11 mmHg, compared with 5.25 and 3.51 mmHg for a matched no-delay-band cross-attention control. Matched ablations, degree-preserving random rewiring, shifted-delay controls, direction controls, and timing perturbations were consistent with a contribution of the ECG-leading delay prior beyond generic attention capacity or sparse graph structure. These retrospective public-dataset results indicate that an ECG-leading delay-band prior can improve subject-independent ECG--PPG fusion.
+\end{abstract}
+
+\begin{keyword}
+cuffless blood pressure estimation \sep electrocardiography \sep photoplethysmography \sep delay-banded cross-attention \sep multimodal fusion \sep subject-independent validation
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+
+Continuous blood pressure (BP) monitoring remains a practical bottleneck in cardiovascular risk assessment, perioperative care, critical illness management, and long-term disease surveillance [1--6]. Intermittent cuffs provide sparse snapshots and may miss transient hypotensive or hypertensive episodes, whereas invasive arterial catheterization provides continuous waveforms but is unsuitable for routine long-term monitoring [4--6]. These limitations motivate cuffless algorithms that estimate BP from physiological signals available in wearable or bedside settings [5,7--8].
+
+ECG and PPG are commonly paired for cuffless BP estimation because they observe ordered stages of the cardiovascular cycle rather than two exchangeable sensor streams. The ECG R-wave marks electrical activation; the peripheral PPG upstroke follows after electromechanical delay, vascular propagation, and sensor-site transit (Fig.~\ref{fig:study_design}A). This ordering underlies pulse transit time, pulse arrival time (PAT), pulse-wave velocity, and temporal-morphological feature pipelines [9--13]. However, the ECG-to-PPG delay is not a fixed scalar: it changes with vascular compliance, autonomic state, age, disease status, medication, sensor placement, and synchronization fidelity [14--20]. A useful neural fusion module should therefore preserve rich waveform morphology while limiting cross-modal search to a plausible ECG-leading PPG delay region.
+
+Existing methods address only part of this requirement. Handcrafted PAT and PTT pipelines preserve physiological timing but compress ECG--PPG coupling into a few descriptors [9--13,19--20]. Deep learning models learn richer representations and have improved BP estimation from ECG, PPG, and reconstructed ABP waveforms [21--38], but many fusion layers add capacity without explicitly encoding the direction from cardiac electrical activation to peripheral pulse arrival [21,24--27,31,39]. Evaluation also matters: random segment-level splits can place windows from the same subject in both training and testing, inflating apparent accuracy and obscuring whether the model generalizes to new subjects [40--41]. Reported accuracy is therefore interpretable only together with the split unit, retention policy, label construction, normalization scope, and comparator protocol.
+
+We tested the hypothesis that a broad ECG-leading delay prior can improve ECG--PPG fusion under strict subject-independent evaluation. PhysioCAT encodes this prior through delay-banded asymmetric cross-attention, allowing direct learned cross-modal exchange only within a plausible ECG-leading PPG pulse-arrival region.
+
+The study links this modeling hypothesis to a subject-disjoint evaluation framework. Subject-grouped out-of-fold testing measures generalization to held-out subjects; a random-split control quantifies split sensitivity; matched ablations and structured mask controls test whether the gain reflects timing rather than generic attention capacity or sparsity; timing perturbations test reliance on ECG--PPG order; and frozen external transfer assesses robustness under source shift (Fig.~\ref{fig:study_design}C--E).
+
+Accordingly, the contributions are threefold.
+\begin{enumerate}[leftmargin=1.5em,itemsep=0.15em,topsep=0.25em]
+\item A delay-banded asymmetric cross-attention module translates the ECG-leading ordering and a broad pulse-arrival range into a token-pair constraint for multimodal waveform fusion.
+\item A subject-disjoint evaluation protocol combines grouped out-of-fold testing, representative comparators, random-split sensitivity analysis, and frozen external transfer.
+\item Mechanism controls, including degree-preserving random rewiring, shifted bands, direction controls, and timing perturbations, test whether the observed gain depends on the proposed ECG-leading delay prior.
+\end{enumerate}
+
+\begin{landscape}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Figure_1.pdf}
+\caption{Study design. Panel A summarizes the ECG-leading PPG timing prior and its literature-guided 120--450 ms token-pair envelope. Panel B shows fixed cohort construction and preprocessing. Panels C--E show subject-disjoint testing, frozen source-to-target transfer, and mechanism controls used to evaluate the delay prior.}
+\label{fig:study_design}
+\end{figure}
+\end{landscape}
+
+\section{Materials and methods}
+
+\subsection{Study datasets}
+
+This retrospective study used three ECG--PPG blood pressure cohorts from two public resources: PulseDB and MIMIC-BP [40--41]. PulseDB contains a VitalDB-derived cohort and a MIMIC-III-derived cohort, whereas MIMIC-BP is a curated subset of the MIMIC-III Waveform Database. After fixed preprocessing, the retained cohorts comprised 2{,}714 PulseDB-Vital subjects with 186{,}252 windows, 2{,}201 PulseDB-MIMIC subjects with 164{,}882 windows, and 1{,}524 MIMIC-BP subjects with 39{,}498 windows. For the primary PulseDB-Vital cohort, retained-versus-excluded BP distributions, age, sex, SQI, and apparent PAT summaries are reported in Supplementary Table S3.
+
+Because timing-focused ECG--PPG analysis is sensitive to synchronization fidelity and acquisition-chain differences, the VitalDB-derived PulseDB cohort (PulseDB-Vital) was used as the primary subject-disjoint benchmark [42]. The MIMIC-derived PulseDB cohort (PulseDB-MIMIC) was reserved for source-shift zero-shot transfer because reported acquisition-chain offsets may confound pulse-arrival-time interpretation in MIMIC-derived waveforms [43--44]. MIMIC-BP was also reserved for zero-shot transfer. PulseDB-MIMIC and MIMIC-BP provided two separately curated, patient-disjoint target protocols from the same MIMIC-III waveform ecosystem. No target cohort was used for delay-band selection, checkpoint selection, normalization fitting, or within-dataset model ranking.
+
+\subsection{Inclusion criteria and preprocessing}
+
+At most one deterministic centered 8 s crop was formed from each source-listed adult waveform segment. PulseDB targets were the mean accepted ABP beat maxima and minima in that crop; MIMIC-BP used its curated scalar target paired with the released record. Windows were retained when the scalar target was finite and ordered, at least six cardiac cycles were detected, paired ECG/PPG checks passed, and the joint SQI rule $\min(SQI_E,SQI_P)\geq0.40$ and $\max(SQI_E,SQI_P)\geq0.55$ was met.  The SQI combined modality-specific morphology and amplitude-stability terms; its component formula and physiological interpretation are given in Supplementary Table S1.
+
+Paired ECG and PPG from the same released segment or record were placed on a shared 250 Hz analysis grid and cropped together. Fixed zero-phase bandpass filtering and wavelet denoising were confined to beat detection and SQI analysis; model inputs used the same shared crop without that analysis transform, followed by the declared deterministic normalization. Paired-sample continuity was required, and apparent ECG--PPG delay was retained only for descriptive mechanism analysis. The literature-guided 120--450 ms lag envelope was held fixed throughout model comparison [13,19--20,42--44].
+
+Each 8 s window yielded one SBP/DBP pair; ABP supplied targets only and was not a model input. ECG and PPG were normalized within each 8 s window by percentile clipping followed by median and interquartile-range scaling. This deterministic transform fitted no subject- or cohort-level statistics, and no held-out-subject statistics or target-domain labels were used. In PulseDB-Vital, a fixed-seed uniform sample of at most 96 eligible windows per subject preserved subject balance.
+
+\subsection{Subject-disjoint evaluation protocol}
+\label{sec:protocol_integrity}
+
+The primary protocol used PulseDB subject identifiers as the split unit. The retained window unit was one deterministic centered 8 s crop per released segment after fixed artifact trimming, so no cohort contributed heavily overlapping crops to multiple folds. A fixed seed-42 five-fold subject-grouped protocol assigned every subject once to outer testing; each fold used 271 disjoint validation subjects and the remaining non-test subjects for training. All methods shared the retained windows, fold manifests, label-extraction rules, quality filters, whole-window robust normalization, validation objective, and early-stopping rule. Tokenization, the delay envelope, SQI rules, architecture depth, and the subject-balance cap were fixed before outer evaluation; within each outer fold, a common three-candidate training-setting grid was resolved using only validation subjects before the outer-test predictions were generated. Contrastive pre-training used fold-local training subjects. For source-to-target transfer, preprocessing and model choices learned on PulseDB-Vital were frozen before evaluation on PulseDB-MIMIC and MIMIC-BP.
+
+\subsection{Architecture of PhysioCAT}
+
+PhysioCAT estimates window-level SBP and DBP from paired 8 s ECG and PPG windows. As shown in Fig.~\ref{fig:architecture}, each modality is first encoded independently, then fused by delay-banded asymmetric cross-attention, followed by an SQI-aware fusion step and final temporal pooling with regression. The ECG and PPG inputs are denoted by $x_E$ and $x_P$, and the model output is $\hat{y}=[\widehat{SBP}, \widehat{DBP}]$. The formulation follows cross-modal attention for unaligned multimodal sequences and physiological-signal fusion [39,46--48], with the additional fixed ECG-leading delay mask.
+
+\begin{landscape}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Figure_2.pdf}
+\caption{PhysioCAT architecture. ECG and PPG windows are encoded into patch-local tokens. Opposite query/key assignments score the same ECG-leading token pairs, and their reciprocal edge affinities are combined with pairwise ECG/PPG quality before temporal contextualization and SBP/DBP regression. At 250 Hz, each 8 s window contains 2{,}000 samples, producing 125 non-overlapping 64 ms tokens.}
+\label{fig:architecture}
+\end{figure}
+\end{landscape}
+
+\subsubsection{Overall network}
+
+Each modality is divided into non-overlapping 16-sample patches and encoded by a modality-specific local projection followed by a token-wise residual multilayer perceptron. Thus, each waveform token has 64 ms support before fusion; its SQI reliability cue is computed from a centered 1 s local analysis window and does not extend the waveform encoder. Direct cross-modal exchange is limited to ECG-leading offsets 3--6, corresponding to token-center lags of 192--384 ms. The ECG-query/PPG-key and PPG-query/ECG-key assignments score the same admissible ECG--PPG edges; reciprocal scores are combined into an ECG-anchored pair representation, after which a two-layer temporal Transformer models whole-window context before pooling and regression.
+
+\subsubsection{Delay-banded asymmetric cross-attention}
+
+The 120--450 ms range was fixed as a conservative ECG-leading lag envelope guided by PAT and PTT literature on pre-ejection effects, vascular-path variability, and synchronization limitations in public waveforms [13,19--20,42--44]. This envelope was held constant across all subject-grouped folds and target cohorts. On the 64 ms token grid, $\mathcal{O}=\{3,4,5,6\}$ realizes token-center lags of 192--384 ms, with complete patch support inside the stated envelope. The mask acts on fixed patch timestamps rather than detected R-wave or pulse-onset events; apparent PAT is used only in descriptive mechanism analyses. The constraint is implemented as an additive mask in scaled dot-product attention [39,46].
+
+For notational simplicity, $i$ indexes an ECG token and $j$ a PPG token. With $\mathcal{O}=\{3,4,5,6\}$, the two branch masks are
+\begin{equation}
+M_{E\leftarrow P}(i,j)=
+\begin{cases}
+0, & j-i\in\mathcal{O},\\
+-\infty, & \mathrm{otherwise},
+\end{cases}
+\qquad
+M_{P\leftarrow E}(j,i)=
+\begin{cases}
+0, & j-i\in\mathcal{O},\\
+-\infty, & \mathrm{otherwise}.
+\end{cases}
+\end{equation}
+Here, asymmetry denotes the admissible ECG-leading token-pair relation; the offline window model retains both query/key assignments. Let the corresponding head-specific attention weights be
+\begin{align}
+A^{h}_{EP} &= \mathrm{Softmax}_j\left(\frac{Q_E^h(K_P^h)^T}{\sqrt{d_k}} + M_{E\leftarrow P}\right),\\
+A^{h}_{PE,ji} &= \mathrm{Softmax}_i\left(\frac{Q_{P,j}^h(K_{E,i}^h)^T}{\sqrt{d_k}} + M_{P\leftarrow E}(j,i)\right).
+\end{align}
+The two assignments are combined on the same admissible ECG--PPG edges rather than at nominally equal token indices. Their reciprocal affinity is
+\begin{equation}
+B^h_{ij}=\sqrt{A^h_{EP,ij}A^h_{PE,ji}}.
+\end{equation}
+Thus, every retained edge represents one ECG-leading pair $(i,j)$ under both query/key assignments, and each attention edge is used once.
+
+\subsubsection{SQI-aware edge reliability}
+
+Let $q_{E,i}$ and $q_{P,j}$ be scale-invariant token SQIs. Pair reliability is their geometric mean, and the normalized edge weights are
+\begin{equation}
+r_{ij}=\sqrt{q_{E,i}q_{P,j}},\qquad
+\beta^h_{ij}=\frac{B^h_{ij}r_{ij}}{\sum_{k:(i,k)\in\mathcal{E}}B^h_{ik}r_{ik}}.
+\end{equation}
+The PPG value paired with ECG anchor $i$ is $\bar V_{P,i}=\mathrm{Concat}_h\sum_j\beta^h_{ij}V^h_{P,j}$. With $\widetilde B^h$ denoting $B^h$ normalized without SQI, the anchor reliability is $\bar r_i=H^{-1}\sum_h\sum_j\widetilde B^h_{ij}r_{ij}$. The final edge-aligned token is
+\begin{equation}
+F_i=\bar r_i\,\mathrm{LayerNorm}\left(W_c[W_EV_{E,i};W_P\bar V_{P,i}]+b_c\right).
+\end{equation}
+The three fully masked boundary rows are set exactly to zero, padding-masked in the temporal encoder, and excluded from attentive, mean, and max pooling. Removing SQI-aware fusion sets $r_{ij}=1$ while leaving the edge set and trainable backbone unchanged. Subject-aware contrastive pre-training followed the general contrastive-learning framework [49], using augmented views of the same training window as positives and windows from different training subjects as negatives. Supervised fine-tuning used component-wise Huber loss with a soft penalty for SBP--DBP inversion.
+
+\subsection{Experimental protocol and evaluation metrics}
+
+The primary evaluation used five fixed subject-grouped outer folds on the synchronized PulseDB-Vital cohort, balanced by subject-level median SBP, median DBP, and sex. Each fold held out 542 or 543 subjects for testing, used 271 disjoint validation subjects, and trained on the remaining 1{,}900 or 1{,}901 subjects; every subject was tested exactly once. The co-primary endpoints were out-of-fold SBP and DBP MAE, and checkpoints minimized the validation mean of the two component MAEs. After the primary study, source models trained on PulseDB-Vital were evaluated without target tuning on PulseDB-MIMIC and MIMIC-BP; the primary transfer tables use seed 42, with two additional training seeds summarized in the Supplementary Material. Comparators included a PAT ridge model, engineered-feature random forest, CNN-BiLSTM, BP-Net [22], TE-SAGRU [27], MuFuBP-Net [31], and a matched PhysioCAT backbone without the delay-band restriction on the same query support. All methods used the same retained windows, labels, folds, whole-window robust normalization, validation objective, and checkpoint rule. The published neural architectures were adapted only to the common ECG/PPG scalar-output protocol; implementation details and training settings are summarized in Supplementary Table S5. Mechanism controls removed or perturbed the delay band, SQI-aware fusion, pre-training, modality inputs, and mask structure. All trained model, ablation, and mechanism configurations used the same complete five-fold subject-grouped protocol; 20 degree-preserving random-rewiring topologies were independently trained with fixed initialization and data-order seeds.
+
+For sample-wise error $e_n=\hat{y}_n-y_n$, the main metrics were
+\begin{align}
+ME &= \frac{1}{N}\sum_{n=1}^{N} e_n, &
+MAE &= \frac{1}{N}\sum_{n=1}^{N} |e_n|, \\
+SDE &= \sqrt{\frac{1}{N-1}\sum_{n=1}^{N}(e_n-ME)^2}, &
+RMSE &= \sqrt{\frac{1}{N}\sum_{n=1}^{N} e_n^2},
+\end{align}
+with Pearson correlation coefficient $r=\mathrm{corr}(\hat{y},y)$. Bland--Altman limits of agreement were reported as $ME \pm 1.96\times SDE$. Subject-cluster bootstrap confidence intervals, conditional on the fixed training and analysis pipeline, used 2{,}000 resamples over held-out subjects while retaining all windows from each sampled subject. Paired comparisons used held-out-subject-level Wilcoxon signed-rank tests with Holm adjustment. Subject-weighted summaries first averaged each subject's absolute error before averaging across subjects. Threshold summaries followed retrospective public-dataset algorithm-comparison conventions [50--51]; BHS, ESH, IEEE 1708-2025, ISO, and ANSI/AAMI/ISO standards are cited as context for formal validation studies [52--56]. Optimizer settings and secondary-analysis tools are summarized in the Supplementary Material [57--59].
+\section{Results}
+
+\subsection{Protocol and cohort analysis}
+
+The primary PulseDB-Vital benchmark used at most one deterministic centered crop per source-listed segment and exact subject-level holdout rather than random-window splitting. The final cohort contained 186{,}252 windows from 2{,}714 subjects; crop/target formation and post-target retention are summarized in Supplementary Tables S2--S3.
+
+The random-split sensitivity check confirmed that split choice strongly affected apparent accuracy. With the same architecture and retained windows, five-fold out-of-fold random segment-level evaluation reduced the apparent PhysioCAT SBP MAE from 4.26 to 2.23 mmHg and apparent DBP MAE from 3.11 to 1.74 mmHg. All main comparisons below use the subject-disjoint protocol.
+
+\subsection{Main subject-disjoint performance}
+
+Table~\ref{tab:core} summarizes the main subject-disjoint comparison on the synchronized PulseDB-Vital cohort. All methods were evaluated under the same subject-disjoint protocol, and the no-delay-band cross-attention control used the same PhysioCAT backbone and query support without the delay-band restriction. PhysioCAT achieved MAE of 4.26 mmHg for SBP and 3.11 mmHg for DBP, with ME $\pm$ SDE of 0.17 $\pm$ 5.48 mmHg for SBP and 0.16 $\pm$ 3.98 mmHg for DBP. Fig.~\ref{fig:core_performance} provides the corresponding ranking, subject-level dispersion, prediction-reference agreement, and Bland--Altman views.
+
+\begin{table}[!htbp]
+\centering
+\caption{Five-fold subject-grouped comparison on PulseDB-Vital. Values are window-weighted. The matched no-delay row shares the PhysioCAT backbone and differs only in the delay-band restriction; comparator implementation details are given in Supplementary Table S5.}
+\label{tab:core}
+\small
+\begin{tabular*}{0.90\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\toprule
+Model & \makecell{SBP MAE\\(mmHg)} & \makecell{SBP SDE\\(mmHg)} & \makecell{DBP MAE\\(mmHg)} & \makecell{DBP SDE\\(mmHg)} \\
+\midrule
+PAT ridge model & 9.52 & 12.30 & 6.06 & 7.86 \\
+Engineered-feature random forest & 8.32 & 10.91 & 5.20 & 6.74 \\
+CNN-BiLSTM [21] & 6.37 & 8.32 & 4.34 & 5.66 \\
+BP-Net [22] & 6.08 & 7.97 & 4.17 & 5.46 \\
+TE-SAGRU [27] & 5.53 & 7.24 & 3.70 & 4.83 \\
+MuFuBP-Net [31] & 5.10 & 6.72 & 3.38 & 4.41 \\
+No-delay-band cross-attention & 5.25 & 6.85 & 3.51 & 4.55 \\
+\textbf{PhysioCAT (proposed)} & \textbf{4.26} & \textbf{5.48} & \textbf{3.11} & \textbf{3.98} \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{Figure_3.pdf}
+\caption{Core subject-disjoint performance on PulseDB-Vital. Panel A ranks models by SBP and DBP MAE. Panel B summarizes subject-level SBP error dispersion for the three leading models. Panels C and D show window-level predicted-versus-reference agreement for SBP and DBP. Panels E and F show the corresponding Bland--Altman residual distributions (prediction minus reference) and limits of agreement; all four panels use the released out-of-fold predictions, with color indicating window density.}
+\label{fig:core_performance}
+\end{figure}
+\clearpage
+
+
+Relative to the matched no-delay-band cross-attention control, PhysioCAT lowered window-weighted MAE by 0.99 mmHg for SBP and 0.40 mmHg for DBP. The same ordering held in subject-weighted summaries and subject-cluster bootstrap intervals (Supplementary Table S10). The held-out-subject comparison against the matched no-delay control favored PhysioCAT for both pressures after multiplicity correction ($p<0.001$).
+
+\subsection{Mechanism analysis of the delay prior}
+
+Table~\ref{tab:factorized} reports matched ablations around the full PhysioCAT model. Removing the delay band produced the largest degradation, increasing SBP and DBP MAE from 4.26 to 5.25 mmHg and from 3.11 to 3.51 mmHg. Removing SQI-aware fusion had a smaller effect, increasing SBP and DBP MAE to 4.61 and 3.33 mmHg. Removing both components produced the weakest configuration. Additional input, pre-training, and SQI-stratified controls are reported in the Supplementary Material.
+
+\begin{table}[!htbp]
+\centering
+\caption{Matched ablations on PulseDB-Vital under subject-disjoint evaluation. Values are MAE in mmHg.}
+\label{tab:factorized}
+\small
+\begin{tabular*}{0.78\textwidth}{@{\extracolsep{\fill}}lrr@{}}
+\toprule
+Variant & SBP MAE & DBP MAE \\
+\midrule
+\textbf{Full PhysioCAT} & \textbf{4.26} & \textbf{3.11} \\
+- Delay-banded attention & 5.25 & 3.51 \\
+- SQI-aware fusion & 4.61 & 3.33 \\
+- Delay band and SQI-aware fusion & 6.09 & 3.96 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Delay-band sensitivity and structured controls showed a coherent ordering. Neighboring physiological bands remained close to the default, whereas no-delay-band attention, degree-preserving random rewiring, shifted and zero-centered local masks, and the PPG-leading mirror band were worse. Fixed-uniform aggregation over the same delay-band edges was also inferior (4.51/3.27 mmHg for SBP/DBP). Together, these controls separate the roles of the admissible lag region, ECG-leading order, sparse connectivity, and learned within-band edge weighting; timing perturbations provided a complementary input-level check. Figures~\ref{fig:mechanism_attention} and \ref{fig:negative_sqi} summarize these results, with attention--PAT and SQI analyses used as descriptive checks.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{Figure_4.pdf}
+\caption{Mechanism-oriented analysis of the delay prior. Panel A schematizes synchronized ECG, PPG, and ABP timing. Panels B--C contrast delay-banded and matched no-delay attention in one fixed representative outer-test window. Panel D summarizes 1{,}024 subject-grouped outer-test windows from 256 subjects (4 per subject) after attention-head averaging and within-window R-wave-query aggregation. Panel E shows delay-band sensitivity, and Panel F illustrates local SQI-aware fusion.}
+\label{fig:mechanism_attention}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{Figure_5.pdf}
+\caption{Protocol and mechanism controls. Panel A compares subject-disjoint testing with a subject-overlapping random segment split. Panel B compares the default ECG-leading PPG delay band with sparse and structured mask controls, including degree-preserving random rewiring. Panel C compares directional and generic fusion variants. Panel D shows SBP inference-time perturbation sensitivity for PhysioCAT and the no-delay-band model, each measured relative to its own synchronized unperturbed baseline. Factorized SQI ablations and SQI-stratified robustness analyses are reported in Table~\ref{tab:factorized} and the Supplementary Material.}
+\label{fig:negative_sqi}
+\end{figure}
+\FloatBarrier
+
+\subsection{Source-to-target transfer}
+
+With source-side preprocessing and model choices frozen, Table~\ref{tab:external} reports source-to-target zero-shot transfer after training on PulseDB-Vital. Performance decreased under domain shift, as expected for cohorts with different acquisition chains, label construction, and preprocessing histories. The model ordering was retained on both target cohorts.
+
+\begin{table}[!htbp]
+\centering
+\caption{Protocol-specific source-to-target transfer results after training on PulseDB-Vital. Values are window-weighted MAE in mmHg; external-cohort bootstrap intervals are reported in the Supplementary Material.}
+\label{tab:external}
+\scriptsize
+\resizebox{0.80\textwidth}{!}{%
+\begin{tabular}{p{3.35cm}rcccccc}
+\toprule
+Evaluation subset & Windows & \makecell[c]{PhysioCAT\\SBP} & \makecell[c]{PhysioCAT\\DBP} & \makecell[c]{Matched no-delay\\SBP} & \makecell[c]{Matched no-delay\\DBP} & \makecell[c]{MuFuBP-Net\\SBP} & \makecell[c]{MuFuBP-Net\\DBP} \\
+\midrule
+PulseDB-MIMIC & 164{,}882 & \textbf{4.95} & \textbf{3.52} & 6.40 & 4.20 & 6.15 & 4.12 \\
+MIMIC-BP & 39{,}498 & \textbf{4.83} & \textbf{3.41} & 6.45 & 4.22 & 5.96 & 4.03 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+The MIMIC-BP result is reported as protocol-specific zero-shot transfer under the present fixed preprocessing and retention pipeline. The external model ordering was unchanged across three source-training seeds. External-cohort bootstrap CIs, source-seed stability, and mask-control analyses are reported in the Supplementary Material.
+\FloatBarrier
+\section{Discussion}
+
+This study tested whether ECG--PPG fusion benefits from an explicit ECG-leading delay prior when the evaluation unit is the subject rather than the window. The main result and mechanism controls gave a consistent answer: PhysioCAT improved on a matched no-delay-band cross-attention control, while random, shifted, zero-centered local, and timing-perturbed controls weakened the model. The evidence was therefore consistent with the proposed ECG-leading PPG delay prior among the tested controls.
+
+The contribution is best understood as a physiological constraint on neural fusion rather than as another generic attention architecture. Classical PAT and PTT pipelines preserve timing interpretability but compress ECG--PPG coupling into a few descriptors. Many recent deep models learn richer morphology but allow fusion layers to search broadly across cross-modal timing [9--13,19--20,27,31]. PhysioCAT occupies an intermediate position: it retains learned waveform representations while restricting cross-modal token exchange to a broad pulse-arrival interval. This design turns a known cardiovascular ordering relationship into an architectural constraint without forcing a single hand-measured PAT feature to explain the full waveform-to-BP mapping.
+
+Matched controls separated the delay prior from simpler alternatives: degree-preserving random rewiring tested sparse graph capacity, shifted bands tested delay location, a sign-reversed PPG-leading mirror band tested the ECG-leading pair relation, and timing perturbations tested dependence on synchronized ECG--PPG order. The random-split control also showed that subject overlap can substantially inflate apparent cuffless-BP accuracy.
+
+External transfer extended the test under source shift. Performance decreased on PulseDB-MIMIC and MIMIC-BP, as expected for public waveform cohorts with different acquisition chains, label construction, synchronization fidelity, and retention policies, but the model ordering persisted after source-side preprocessing and checkpoint selection were frozen. These protocol-specific transfers show that the delay-banded model retained its ordering across the two target protocols; broader transfer stability and clinical validation remain future work.
+
+Several limitations remain. All experiments were retrospective analyses of public datasets. The fixed delay band may be less suitable under severe vascular disease, arrhythmia, low perfusion, unusual sensor placement, motion, or under-represented extreme-pressure regimes [19--20,43--44]. The study evaluates algorithmic estimation from curated waveform windows rather than prospective cuffless-device operation under calibration drift, sensor repositioning, or ambulatory artifacts. Future work should test the same inductive bias in official-protocol reruns, synchronized hard-case datasets, robust personalization studies, and prospective monitoring settings [60--61].
+\section{Conclusion}
+
+This retrospective public-dataset study supports two conclusions. First, strict subject-independent benchmarking is essential for interpreting cuffless BP algorithms, because subject-overlapping splits can substantially overstate apparent accuracy. Second, within a subject-disjoint protocol, a broad ECG-leading PPG delay prior can improve multimodal fusion without discarding morphology-aware learning. PhysioCAT therefore provides a testable physiological inductive bias for ECG--PPG BP estimation, with matched controls consistent with a contribution from the tested ECG-leading delay constraint beyond generic attention capacity or sparsity.
+\section*{CRediT authorship contribution statement}
+
+Youren Shang: Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Visualization, Writing -- original draft. Ningyuan Zhang: Methodology, Validation, Supervision, Project administration, Writing -- review and editing.
+
+\section*{Funding}
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\section*{Ethics Statement}
+
+This study was a secondary analysis of de-identified physiological waveform datasets obtained through their respective public or credentialed-access repositories (PulseDB and MIMIC-BP). The authors did not recruit participants, collect new data, or access direct identifiers. Under the authors' institutional policy, no additional ethics approval or informed consent was required for this analysis. Original data collection, de-identification, and release were governed by the provider-documented ethics approvals, consent or waiver arrangements, and repository data-use requirements.
+
+\section*{Declaration of Competing Interest}
+
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Acknowledgments}
+
+The authors thank the maintainers of the public physiological waveform databases used in this study and acknowledge the institutional high-performance-computing resources used for model training and reproducibility.
+
+\section*{Data Availability Statement}
+
+The quantitative experiments use publicly available PulseDB and MIMIC-BP data under the access and data-use terms of their repositories; raw waveforms are not redistributed. The code, fixed configurations, fold manifests, released predictions, source tables, and reproduction scripts are publicly available at \url{https://github.com/shangyr/PhysioCAT}. The version accompanying this submission is identified by the immutable tag \texttt{bspc-submission-v1}; the corresponding commit SHA is recorded in the submission system. Following acceptance, the accepted artifact will also be archived in a DOI-issuing repository, subject to the source-data terms.
+
+\section*{References}
+\small
+\sloppy
+\begin{enumerate}[label={[\arabic*]},leftmargin=2.2em]
+\item K.T. Mills, A. Stefanescu, J. He, The global epidemiology of hypertension, Nat. Rev. Nephrol. 16 (2020) 223--237, \url{https://doi.org/10.1038/s41581-019-0244-2}.
+\item B. Zhou, P. Perel, G.A. Mensah, M. Ezzati, Global epidemiology, health burden and effective interventions for elevated blood pressure and hypertension, Nat. Rev. Cardiol. 18 (2021) 785--802, \url{https://doi.org/10.1038/s41569-021-00559-8}.
+\item World Health Organization, Global Report on Hypertension: The Race Against a Silent Killer, World Health Organization, Geneva, 2023, \url{https://www.who.int/publications/i/item/9789240081062}.
+\item M. Wijnberge, B. van der Ster, A.P.J. Vlaar, M.W. Hollmann, B.F. Geerts, D.P. Veelo, The effect of intermittent versus continuous non-invasive blood pressure monitoring on the detection of intraoperative hypotension: a sub-study, J. Clin. Med. 11 (2022) 4083, \url{https://doi.org/10.3390/jcm11144083}.
+\item R. Mukkamala, G.S. Stergiou, A.P. Avolio, Cuffless blood pressure measurement, Annu. Rev. Biomed. Eng. 24 (2022) 203--230, \url{https://doi.org/10.1146/annurev-bioeng-110220-014644}.
+\item B. Saugel, K. Kouz, A.S. Meidert, L. Schulte-Uentrop, S. Romagnoli, How to measure blood pressure using an arterial catheter: a systematic 5-step approach, Crit. Care 24 (2020) 172, \url{https://doi.org/10.1186/s13054-020-02859-w}.
+\item T. Le, F. Ellington, T.Y. Lee, K. Vo, M. Khine, S.K. Krishnan, et al., Continuous non-invasive blood pressure monitoring: a methodological review on measurement techniques, IEEE Access 8 (2020) 212478--212498, \url{https://doi.org/10.1109/ACCESS.2020.3040257}.
+\item J.A. Pandit, E. Lores, D. Batlle, Cuffless blood pressure monitoring: promises and challenges, Clin. J. Am. Soc. Nephrol. 15 (2020) 1531--1538, \url{https://doi.org/10.2215/CJN.03680320}.
+\item L.A. Geddes, M.H. Voelz, C.F. Babbs, J.D. Bourland, W.A. Tacker, Pulse transit time as an indicator of arterial blood pressure, Psychophysiology 18 (1981) 71--74, \url{https://doi.org/10.1111/j.1469-8986.1981.tb01545.x}.
+\item M. Kachuee, M.M. Kiani, H. Mohammadzade, M. Shabany, Cuffless blood pressure estimation algorithms for continuous health-care monitoring, IEEE Trans. Biomed. Eng. 64 (2017) 859--869, \url{https://doi.org/10.1109/TBME.2016.2580904}.
+\item P. Yousefian, S. Shin, A.S. Mousavi, A. Tivay, C.S. Kim, R. Mukkamala, et al., Pulse transit time-pulse wave analysis fusion based on wearable wrist ballistocardiogram for cuff-less blood pressure trend tracking, IEEE Access 8 (2020) 138077--138087, \url{https://doi.org/10.1109/ACCESS.2020.3012384}.
+\item J. Shao, P. Shi, S. Hu, Y. Liu, H. Yu, An optimization study of estimating blood pressure models based on pulse arrival time for continuous monitoring, J. Healthc. Eng. 2020 (2020) 1078251, \url{https://doi.org/10.1155/2020/1078251}.
+\item R. Mukkamala, J.O. Hahn, O.T. Inan, L.K. Mestha, C.S. Kim, H. Toreyin, et al., Toward ubiquitous blood pressure monitoring via pulse transit time: theory and practice, IEEE Trans. Biomed. Eng. 62 (2015) 1879--1901, \url{https://doi.org/10.1109/TBME.2015.2441951}.
+\item Y. Obata, Q.J. Ong, J.T. Magruder, H. Grichkevitch, D.E. Berkowitz, D. Nyhan, et al., Noninvasive assessment of the effect of position and exercise on pulse arrival to peripheral vascular beds in healthy volunteers, Front. Physiol. 8 (2017) 47, \url{https://doi.org/10.3389/fphys.2017.00047}.
+\item B. Escobar-Restrepo, R. Torres-Villa, P.A. Kyriacou, Evaluation of the linear relationship between pulse arrival time and blood pressure in ICU patients: potential and limitations, Front. Physiol. 9 (2018) 1848, \url{https://doi.org/10.3389/fphys.2018.01848}.
+\item P.C.P. Chao, C.C. Wu, D.H. Nguyen, B.S. Nguyen, P.C. Huang, V.H. Le, The machine learnings leading the cuffless PPG blood pressure sensors into the next stage, IEEE Sens. J. 21 (2021) 12498--12510, \url{https://doi.org/10.1109/JSEN.2021.3073850}.
+\item C. El-Hajj, P.A. Kyriacou, A review of machine learning techniques in photoplethysmography for the non-invasive cuff-less measurement of blood pressure, Biomed. Signal Process. Control 58 (2020) 101870, \url{https://doi.org/10.1016/j.bspc.2020.101870}.
+\item S. Maqsood, S. Xu, S. Tran, S. Garg, M. Springer, M. Karunanithi, et al., A survey: from shallow to deep machine learning approaches for blood pressure estimation using biosensors, Expert Syst. Appl. 197 (2022) 116788, \url{https://doi.org/10.1016/j.eswa.2022.116788}.
+\item G. Zhang, M. Gao, D. Xu, N.B. Olivier, R. Mukkamala, Pulse arrival time is not an adequate surrogate for pulse transit time as a marker of blood pressure, J. Appl. Physiol. 111 (2011) 1681--1686, \url{https://doi.org/10.1152/japplphysiol.00980.2011}.
+\item E. Finnegan, S. Davidson, M. Harford, J. Jorge, P. Watkinson, D. Young, et al., Pulse arrival time as a surrogate of blood pressure, Sci. Rep. 11 (2021) 22767, \url{https://doi.org/10.1038/s41598-021-01358-4}.
+\item S. Baker, W. Xiang, I. Atkinson, A hybrid neural network for continuous and non-invasive estimation of blood pressure from raw electrocardiogram and photoplethysmogram waveforms, Comput. Methods Programs Biomed. 207 (2021) 106191, \url{https://doi.org/10.1016/j.cmpb.2021.106191}.
+\item S. Zabihi, E. Rahimian, F. Marefat, A. Asif, P. Mohseni, A. Mohammadi, BP-Net: cuff-less and non-invasive blood pressure estimation via a generic deep convolutional architecture, Biomed. Signal Process. Control 78 (2022) 103850, \url{https://doi.org/10.1016/j.bspc.2022.103850}.
+\item C. El-Hajj, P.A. Kyriacou, Cuffless blood pressure estimation from PPG signals and its derivatives using deep learning models, Biomed. Signal Process. Control 70 (2021) 102984, \url{https://doi.org/10.1016/j.bspc.2021.102984}.
+\item S. Mahmud, N. Ibtehaz, A. Khandakar, M.S. Rahman, A.J. Gonzales, T. Rahman, et al., NABNet: a nested attention-guided BiConvLSTM network for a robust prediction of blood pressure components from reconstructed arterial blood pressure waveforms using PPG and ECG signals, Biomed. Signal Process. Control 79 (2023) 104247, \url{https://doi.org/10.1016/j.bspc.2022.104247}.
+\item S. Rastegar, H. GholamHosseini, A. Lowe, Hybrid CNN-SVR blood pressure estimation model using ECG and PPG signals, Sensors 23 (2023) 1259, \url{https://doi.org/10.3390/s23031259}.
+\item B. Kamanditya, Y.N. Fuadah, T.N.Q. Mahardika, K.M. Lim, Continuous blood pressure prediction system using Conv-LSTM network on hybrid latent features of photoplethysmogram (PPG) and electrocardiogram (ECG) signals, Sci. Rep. 14 (2024) 16450, \url{https://doi.org/10.1038/s41598-024-66514-y}.
+\item Z. Huang, J. Shao, P. Zhou, B. Liu, J. Zhu, D. Fang, Continuous blood pressure monitoring based on transformer encoders and stacked attention gated recurrent units, Biomed. Signal Process. Control 99 (2025) 106860, \url{https://doi.org/10.1016/j.bspc.2024.106860}.
+\item Z. Tian, A. Liu, G. Zhu, X. Chen, A paralleled CNN and Transformer network for PPG-based cuff-less blood pressure estimation, Biomed. Signal Process. Control 99 (2025) 106741, \url{https://doi.org/10.1016/j.bspc.2024.106741}.
+\item C. Ma, P. Zhang, H. Zhang, Z. Liu, F. Song, Y. He, et al., STP: self-supervised transfer learning based on Transformer for noninvasive blood pressure estimation using photoplethysmography, Expert Syst. Appl. 249 (2024) 123809, \url{https://doi.org/10.1016/j.eswa.2024.123809}.
+\item C. Ma, P. Zhang, F. Song, Y. Sun, G. Fan, T. Zhang, et al., KD-Informer: a cuff-less continuous blood pressure waveform estimation approach based on single photoplethysmography, IEEE J. Biomed. Health Inform. 27 (2023) 2219--2230, \url{https://doi.org/10.1109/JBHI.2022.3181328}.
+\item F. Hassan, M. Ali, Z. Akbar, J. Li, Y. Liu, W. Wang, et al., MuFuBP-Net: a multimodal fusion network for cuffless blood pressure estimation using dual-feature pipeline with probabilistic feature encoder, IEEE J. Biomed. Health Inform. 29 (2025) 7068--7079, \url{https://doi.org/10.1109/JBHI.2025.3563852}.
+\item Y. Zheng, H. Huang, J. Gao, J. Hong, S. Wu, Y. Zhang, et al., UTransBPNet for cuffless and calibration-free blood pressure estimation under dynamic conditions, Sci. Rep. 15 (2025) 17654, \url{https://doi.org/10.1038/s41598-025-02963-3}.
+\item A. Arjomand, A. Boudesh, F. Bayatmakou, K.B. Kent, A. Mohammadi, TransfoRhythm: a Transformer architecture conductive to blood pressure estimation via solo PPG signal capturing, arXiv:2404.15352 (2024), \url{https://doi.org/10.48550/arXiv.2404.15352}.
+\item S. Gupta, A. Singh, A. Sharma, R.K. Tripathy, Higher order derivative-based integrated model for cuff-less blood pressure estimation and stratification using PPG signals, IEEE Sens. J. 22 (2022) 22030--22039, \url{https://doi.org/10.1109/JSEN.2022.3211993}.
+\item Y. Zhou, Z. Tan, Y. Liu, H. Cheng, Fully convolutional neural network and PPG signal for arterial blood pressure waveform estimation, Physiol. Meas. 44 (2023) 075007, \url{https://doi.org/10.1088/1361-6579/ace414}.
+\item R. Zhao, Y. Lu, L. Li, H. Ge, X. Fu, AMRUNet: an attention-guided MultiResUNet for continuous noninvasive blood pressure estimation, in: Proc. Int. Joint Conf. Neural Netw., 2024, pp. 1--8, \url{https://doi.org/10.1109/IJCNN60899.2024.10650277}.
+\item X. Che, M. Li, W. Kang, F. Lai, J. Wang, Continuous blood pressure estimation from two-channel PPG parameters by XGBoost, in: Proc. IEEE Int. Conf. Robot. Biomimetics, 2019, pp. 2707--2712, \url{https://doi.org/10.1109/ROBIO49542.2019.8961600}.
+\item R. He, Z.P. Huang, L.Y. Ji, J.K. Wu, H. Li, Z.Q. Zhang, Beat-to-beat ambulatory blood pressure estimation based on random forest, in: Proc. IEEE 13th Int. Conf. Wearable Implant. Body Sens. Netw., 2016, pp. 194--198, \url{https://doi.org/10.1109/BSN.2016.7516258}.
+\item A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A.N. Gomez, et al., Attention is all you need, Adv. Neural Inf. Process. Syst. 30 (2017) 5998--6008, \url{https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html}.
+\item W. Wang, P. Mohseni, K.L. Kilgore, L. Najafizadeh, PulseDB: a large, cleaned dataset based on MIMIC-III and VitalDB for benchmarking cuff-less blood pressure estimation methods, Front. Digit. Health 4 (2023) 1090854, \url{https://doi.org/10.3389/fdgth.2022.1090854}.
+\item I. Sanches, V.V. Gomes, C. Caetano, L.S.B. Cabrera, V.H. Cene, T. Beltrame, et al., MIMIC-BP: a curated dataset for blood pressure estimation, Sci. Data 11 (2024) 1233, \url{https://doi.org/10.1038/s41597-024-04041-1}.
+\item H.C. Lee, Y. Park, S.B. Yoon, S.M. Yang, D. Park, C.W. Jung, VitalDB, a high-fidelity multi-parameter vital signs database in surgical patients, Sci. Data 9 (2022) 279, \url{https://doi.org/10.1038/s41597-022-01411-5}.
+\item J. Lee, S. Yang, S. Lee, H.C. Kim, Analysis of pulse arrival time as an indicator of blood pressure in a large surgical biosignal database: recommendations for developing ubiquitous blood pressure monitoring methods, J. Clin. Med. 8 (2019) 1773, \url{https://doi.org/10.3390/jcm8111773}.
+\item Y. Liang, D. Abbott, N. Howard, K. Lim, R. Ward, M. Elgendi, How effective is pulse arrival time for evaluating blood pressure? Challenges and recommendations from a study using the MIMIC database, J. Clin. Med. 8 (2019) 337, \url{https://doi.org/10.3390/jcm8030337}.
+\item P. Bota, R. Silva, C. Carreiras, A. Fred, H.P. da Silva, BioSPPy: a Python toolbox for physiological signal processing, SoftwareX 26 (2024) 101712, \url{https://doi.org/10.1016/j.softx.2024.101712}.
+\item A. Nicolson, K.K. Paliwal, Masked multi-head self-attention for causal speech enhancement, Speech Commun. 125 (2020) 80--96, \url{https://doi.org/10.1016/j.specom.2020.10.004}.
+\item Y.H. Tsai, S. Bai, P.P. Liang, J.Z. Kolter, L.P. Morency, R. Salakhutdinov, Multimodal Transformer for unaligned multimodal language sequences, in: Proc. 57th Annu. Meet. Assoc. Comput. Linguistics, 2019, pp. 6558--6569, \url{https://doi.org/10.18653/v1/P19-1656}.
+\item J. Li, N. Chen, H. Zhu, G. Li, Z. Xu, D. Chen, Incongruity-aware multimodal physiology signals fusion for emotion recognition, Inf. Fusion 105 (2024) 102220, \url{https://doi.org/10.1016/j.inffus.2023.102220}.
+\item T. Chen, S. Kornblith, M. Norouzi, G. Hinton, A simple framework for contrastive learning of visual representations, Proc. Mach. Learn. Res. 119 (2020) 1597--1607, \url{https://proceedings.mlr.press/v119/chen20j.html}.
+\item M. Elgendi, F. Haugg, R.R. Fletcher, J. Allen, H. Shin, A. Alian, et al., Recommendations for evaluating photoplethysmography-based algorithms for blood pressure assessment, Commun. Med. 4 (2024) 140, \url{https://doi.org/10.1038/s43856-024-00555-2}.
+\item S. Gonz{\'a}lez, W.T. Hsieh, T.P.C. Chen, A benchmark for machine-learning based non-invasive blood pressure estimation using photoplethysmogram, Sci. Data 10 (2023) 149, \url{https://doi.org/10.1038/s41597-023-02020-6}.
+\item E. O'Brien, J. Petrie, W. Littler, M. de Swiet, P.L. Padfield, K. O'Malley, et al., The British Hypertension Society protocol for the evaluation of automated and semi-automated blood pressure measuring devices with special reference to ambulatory systems, J. Hypertens. 8 (1990) 607--619, \url{https://doi.org/10.1097/00004872-199007000-00004}.
+\item G.S. Stergiou, A.P. Avolio, P. Palatini, K.G. Kyriakoulis, A.E. Schutte, S. Mieke, et al., European Society of Hypertension recommendations for the validation of cuffless blood pressure measuring devices: European Society of Hypertension Working Group on Blood Pressure Monitoring and Cardiovascular Variability, J. Hypertens. 41 (2023) 2074--2087, \url{https://doi.org/10.1097/HJH.0000000000003483}.
+\item IEEE, IEEE Std 1708-2025: IEEE Standard for Wearable, Cuffless Blood Pressure Measuring Devices, IEEE Standards Association, 2026, \url{https://doi.org/10.1109/IEEESTD.2026.11475616}.
+\item International Organization for Standardization, ISO 81060-3:2022, Non-invasive sphygmomanometers -- Part 3: Clinical investigation of continuous automated measurement type, ISO, Geneva, 2022, \url{https://www.iso.org/standard/71161.html}.
+\item Association for the Advancement of Medical Instrumentation, American National Standards Institute, International Organization for Standardization, ANSI/AAMI/ISO 81060-2:2019, Non-invasive sphygmomanometers -- Part 2: Clinical investigation of intermittent automated measurement type, AAMI, Arlington, 2019, \url{https://aami.org/standard/ansi-aami-iso-81060-22019-pdf/}.
+\item D.P. Kingma, J. Ba, Adam: a method for stochastic optimization, in: Int. Conf. Learn. Represent., 2015, \url{https://arxiv.org/abs/1412.6980}.
+\item I. Loshchilov, F. Hutter, Decoupled weight decay regularization, in: Int. Conf. Learn. Represent., 2019, \url{https://openreview.net/forum?id=Bkg6RiCqY7}.
+\item J. Lei, M. G'Sell, A. Rinaldo, R.J. Tibshirani, L. Wasserman, Distribution-free predictive inference for regression, J. Am. Stat. Assoc. 113 (2018) 1094--1111, \url{https://doi.org/10.1080/01621459.2017.1307116}.
+\item J. Leitner, P.H. Chiang, S. Dey, Personalized blood pressure estimation using photoplethysmography: a transfer learning approach, IEEE J. Biomed. Health Inform. 26 (2022) 218--228, \url{https://doi.org/10.1109/JBHI.2021.3085526}.
+\item D.H. Nguyen, P.C.P. Chao, H.F. Yan, T.Y. Tu, C.H. Cheng, T.P. Phan, Predicting blood pressures for pregnant women by PPG and personalized deep learning, IEEE J. Biomed. Health Inform. 29 (2025) 5--16, \url{https://doi.org/10.1109/JBHI.2024.3386707}.
+\end{enumerate}
+
+\end{document}

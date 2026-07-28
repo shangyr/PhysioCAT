@@ -1,0 +1,11 @@
+display_label,family,subgroup,definition
+Age 18-40,Age,18--40,18 <= age <= 40 years
+Age 41-65,Age,41--65,41 <= age <= 65 years
+Age 66+,Age,>=66,age >= 66 years
+Female,Sex,Female,sex recorded as female
+Male,Sex,Male,sex recorded as male
+Lower-BP windows,BP,Lower-BP windows,"SBP < 130 and DBP < 80 mmHg; window stratum, not a clinical diagnosis"
+Elevated-BP windows,BP,Elevated-BP windows,"SBP >= 130 or DBP >= 80 mmHg; window stratum, not a clinical diagnosis"
+Normal rhythm,Rhythm,Regular,regular-rhythm windows
+Irregular rhythm,Rhythm,RR-irregular,RR-irregular windows
+Lowest SQI,SQI,Lower,lowest retained signal-quality stratum

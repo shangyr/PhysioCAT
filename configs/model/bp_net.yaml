@@ -1,0 +1,42 @@
+kind: model
+name: bp_net
+inputs:
+- ECG
+- PPG
+input_view: window_robust
+training:
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_objective: mean(SBP_MAE, DBP_MAE)
+  checkpoint_rule: minimum subject-disjoint validation objective
+output:
+  targets:
+  - SBP
+  - DBP
+  loss: Huber_plus_order_penalty
+  loss_parameters:
+    huber_delta_mmHg: 5.0
+    minimum_sbp_minus_dbp_mmHg: 0.0
+    order_weight: 0.15
+architecture:
+  hidden_dim: 128
+  dual_residual_towers: true
+  squeeze_excitation: true
+  dilations:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 4
+  - 2
+  cross_gating: true
+training_protocol:
+  contrastive_pretraining: false
+  configuration_policy: fold_local_validation_from_fixed_three_candidate_grid
+  validation_subjects_disjoint: true
+  scheduler: cosine_with_warmup
+implementation:
+  status: paper_aligned_common_protocol_implementation
+  source: published BP-Net specification
+  common_protocol_adaptations:
+  - two-channel ECG/PPG input
+  - two-component BP output

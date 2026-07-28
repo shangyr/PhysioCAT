@@ -1,0 +1,4 @@
+cohort,display,source_indexed_segments,target_formed_candidates,subjects,windows,role
+pulsedb_vital,PulseDB-Vital,240428,225536,2714,186252,primary five-fold subject-grouped outer testing
+pulsedb_mimic,PulseDB-MIMIC,211414,198800,2201,164882,zero-shot source shift
+mimic_bp,MIMIC-BP,47059,42822,1524,39498,zero-shot target protocol

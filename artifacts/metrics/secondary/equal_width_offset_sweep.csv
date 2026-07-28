@@ -1,0 +1,4 @@
+offset_band,model,common_ecg_anchor_rows,allowed_edges,sbp_mae,dbp_mae,n_windows,n_subjects,evaluation_scope
+offsets 2--5,offset_band_2_5_common,113,452,4.505127,3.255651,186252,2714,complete five-fold subject-grouped OOF
+offsets 3--6,offset_band_3_6_common,113,452,4.331119,3.183436,186252,2714,complete five-fold subject-grouped OOF
+offsets 4--7,offset_band_4_7_common,113,452,4.501974,3.248369,186252,2714,complete five-fold subject-grouped OOF

@@ -1,0 +1,12 @@
+{
+  "interpretation": "Validation and outer-test evidence agree across the five subject-grouped folds; both statistics aggregate disjoint subject groups rather than comparing a validation average with one held-out individual.",
+  "mean_test_difference_mmHg": -0.6961621721154696,
+  "mean_validation_difference_mmHg": -0.6942780905182457,
+  "paired_folds": 5,
+  "physiocat_better_test_folds": 5,
+  "physiocat_better_test_fraction": 1.0,
+  "physiocat_better_validation_folds": 5,
+  "physiocat_better_validation_fraction": 1.0,
+  "status": "PASS",
+  "validation_test_difference_correlation": 0.49563382870721684
+}

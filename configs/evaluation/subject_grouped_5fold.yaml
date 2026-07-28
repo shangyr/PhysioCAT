@@ -1,0 +1,31 @@
+kind: evaluation
+split: fixed_five_fold_subject_grouped_out_of_fold
+folds: 5
+split_seed: 42
+roles:
+  training: approximately 70%
+  validation: 271 subjects per fold (approximately 10%)
+  outer_test: approximately 20%; every subject exactly once
+metrics:
+- ME
+- MAE
+- SDE
+- RMSE
+- Pearson_r
+- threshold_5_10_15
+weighting:
+- window
+- subject
+bootstrap:
+  cluster: held_out_subject
+  reps: 2000
+  seed: 42
+  interval: percentile_95
+  retain_all_windows: true
+paired_test:
+  unit: held_out_subject
+  test: two_sided_Wilcoxon_signed_rank
+  multiplicity: single_Holm_family_across_22_reported_tests
+  effect_size: matched_rank_biserial
+agreement:
+  repeated_measure_variance_components: true

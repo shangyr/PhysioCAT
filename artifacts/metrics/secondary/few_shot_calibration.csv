@@ -1,0 +1,6 @@
+calibration_windows,n_resamples,eligible_subjects,n_evaluation_windows,offset_estimator,physiocat_sbp_mae,physiocat_sbp_resampling_low,physiocat_sbp_resampling_high,physiocat_dbp_mae,physiocat_dbp_resampling_low,physiocat_dbp_resampling_high,baseline_sbp_mae,baseline_sbp_resampling_low,baseline_sbp_resampling_high,baseline_dbp_mae,baseline_dbp_resampling_low,baseline_dbp_resampling_high
+0,200,1522,24264,none,4.823504,4.797474,4.851758,3.406308,3.384042,3.427366,5.946487,5.916763,5.980643,4.035489,4.014258,4.058474
+1,200,1522,24264,shrunken subject residual mean (prior strength 5 windows),4.757392,4.721487,4.793058,3.373319,3.348933,3.397633,5.855237,5.823304,5.893538,3.981840,3.951205,4.010659
+2,200,1522,24264,shrunken subject residual mean (prior strength 5 windows),4.710789,4.678416,4.748460,3.348204,3.324097,3.374088,5.790469,5.755553,5.826078,3.941178,3.912343,3.970270
+5,200,1522,24264,shrunken subject residual mean (prior strength 5 windows),4.621836,4.591284,4.651454,3.297865,3.275710,3.321025,5.672092,5.632725,5.705256,3.864267,3.834969,3.890335
+10,200,1522,24264,shrunken subject residual mean (prior strength 5 windows),4.552125,4.523677,4.579084,3.254743,3.231596,3.275381,5.578931,5.546559,5.611909,3.802493,3.780540,3.825462

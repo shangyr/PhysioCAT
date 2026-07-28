@@ -1,0 +1,11 @@
+endpoint,tail_definition,threshold_mmhg,composition_category,tail_windows,tail_share_pct,exclusive_classification_rule
+SBP,absolute error >= endpoint-specific 90th percentile,8.927616,Low SQI,10331,55.465478,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+SBP,absolute error >= endpoint-specific 90th percentile,8.927616,Elevated-BP windows,3468,18.619135,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+SBP,absolute error >= endpoint-specific 90th percentile,8.927616,Irregular rhythm,194,1.041555,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+SBP,absolute error >= endpoint-specific 90th percentile,8.927616,BP extreme,105,0.563728,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+SBP,absolute error >= endpoint-specific 90th percentile,8.927616,Other,4528,24.310104,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+DBP,absolute error >= endpoint-specific 90th percentile,6.482560,Low SQI,11153,59.878664,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+DBP,absolute error >= endpoint-specific 90th percentile,6.482560,Elevated-BP windows,2966,15.923977,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+DBP,absolute error >= endpoint-specific 90th percentile,6.482560,Irregular rhythm,161,0.864383,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+DBP,absolute error >= endpoint-specific 90th percentile,6.482560,BP extreme,117,0.628154,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other
+DBP,absolute error >= endpoint-specific 90th percentile,6.482560,Other,4229,22.704821,Low SQI > Elevated-BP windows > Irregular rhythm > BP extreme > Other

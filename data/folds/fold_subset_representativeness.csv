@@ -1,0 +1,6 @@
+scope,selection_seed,subjects,windows,mean_subject_sbp,mean_subject_dbp,mean_age_years,female_fraction,mean_subject_min_sqi,mean_apparent_pat_ms,selection_used_model_predictions
+outer_test_fold_1,42,546,37990,126.520055,69.029631,60.639194,0.368132,0.680515,275.605439,False
+outer_test_fold_2,42,543,36605,126.538298,68.991917,60.023941,0.364641,0.685992,276.886756,False
+outer_test_fold_3,42,545,37553,126.648516,69.056467,60.750459,0.359633,0.680173,277.541475,False
+outer_test_fold_4,42,538,36804,126.575379,68.999598,60.319703,0.360595,0.683581,277.020079,False
+outer_test_fold_5,42,542,37300,126.525606,69.036362,60.512915,0.361624,0.677887,275.996994,False

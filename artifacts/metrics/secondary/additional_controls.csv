@@ -1,0 +1,12 @@
+control_family,variant,model,sbp_mae,dbp_mae,n_windows,n_subjects,evaluation_scope
+Input,ECG only,ecg_only,8.539155,5.735597,186252,2714,complete five-fold subject-grouped OOF
+Input,PPG only,ppg_only,7.088397,4.492357,186252,2714,complete five-fold subject-grouped OOF
+Training,Without subject-aware pre-training,without_pretraining,4.675018,3.311970,186252,2714,complete five-fold subject-grouped OOF
+Fusion,Early concatenation,early_concat,5.983012,3.853459,186252,2714,complete five-fold subject-grouped OOF
+Fusion,Late averaging,late_average,6.186575,3.990233,186252,2714,complete five-fold subject-grouped OOF
+Fusion,Gated fusion,gated_fusion,5.894737,3.824947,186252,2714,complete five-fold subject-grouped OOF
+Fusion,SE-based fusion,se_fusion,5.881104,3.776365,186252,2714,complete five-fold subject-grouped OOF
+Fusion,No-delay-band bidirectional attention,matched_no_delay,5.250650,3.512501,186252,2714,complete five-fold subject-grouped OOF
+Fusion,PPG-leading mirror delay band,ppg_leading_mirror,4.823447,3.449637,186252,2714,complete five-fold subject-grouped OOF
+Fusion,Delay-banded unidirectional attention,unidirectional_delay,4.870855,3.493138,186252,2714,complete five-fold subject-grouped OOF
+Fusion,Full PhysioCAT,physiocat,4.263173,3.108044,186252,2714,complete five-fold subject-grouped OOF

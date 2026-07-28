@@ -1,0 +1,21 @@
+kind: evaluation
+split: fixed_random_segment_5fold_out_of_fold
+folds: 5
+split_seed: 42
+partition_unit: window_id
+test_rule: segment_partition_id_equals_fold_id
+validation_rule: segment_partition_id_equals_fold_id_plus_one_modulo_five
+training_rule: remaining_three_segment_partitions
+prediction_role: out_of_fold_test
+membership: data/folds/pulsedb_vital_random_segment_5fold_membership.csv.gz
+summary: data/folds/pulsedb_vital_random_segment_5fold_summary.csv
+metrics: [ME, MAE, SDE, RMSE, Pearson_r]
+weighting: [window]
+bootstrap:
+  cluster: subject_id
+  reps: 2000
+  seed: 42
+  interval: percentile_95
+paired_test:
+  unit: subject_id
+  multiplicity: Holm

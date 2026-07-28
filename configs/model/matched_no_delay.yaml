@@ -1,0 +1,53 @@
+kind: model
+name: matched_no_delay
+inputs: [ECG, PPG, token_level_SQI]
+architecture:
+  samples_per_window: 2000
+  token_count: 125
+  hidden_dim: 128
+  attention_heads: 4
+  ffn_multiplier: 4
+  dropout: 0.10
+  modality_encoder: nonoverlapping_local_convolution_plus_residual_mlp
+  patch_samples: 16
+  patch_mlp_multiplier: 2
+  analysis_grid_patch_receptive_field_ms: 64
+  waveform_encoder_context_ms: 64
+  sqi_reliability_context_ms: 1000
+  post_fusion_temporal_layers: 2
+  token_spacing_ms: 64
+  position_embedding: learned
+  modality_embedding: learned
+  cross_attention_branches: [ECG_query_PPG_key_value, PPG_query_ECG_key_value]
+  message_fusion_index: exact_ECG_PPG_edge
+  attention_edge_use: reciprocal_single_pass
+  common_stream: reciprocal_edge_affinity_weighted_pair_projection
+  joint_fusion_inputs: edge_aligned_ECG_and_PPG_values
+  modality_residual_bypass: false
+  edge_sqi: geometric_mean_of_ECG_query_and_PPG_key_quality
+  pooling: [attentive, average, maximum]
+  pooling_query_support: [0, 121]
+training:
+  configuration_policy: fixed_common_protocol_registry
+  validation_objective: mean(SBP_MAE, DBP_MAE)
+  checkpoint_rule: minimum_subject_disjoint_validation_objective
+  contrastive_pretraining: true
+output:
+  targets: [SBP, DBP]
+  loss: Huber_plus_order_penalty
+  loss_parameters:
+    huber_delta_mmHg: 5.0
+    minimum_sbp_minus_dbp_mmHg: 0.0
+    order_weight: 0.15
+cross_attention:
+  physiologic_pairing: unconstrained
+  delay_band_ms: null
+  matched_backbone: physiocat
+  parameter_identity_required: true
+  second_attention_routing: false
+  reciprocal_edge_alignment: geometric_mean_of_opposite_query_key_assignments
+  allowed_edges_per_branch: 15250
+  nonempty_query_rows: 122
+  zero_update_boundary_rows: 3
+  all_tokens_retained_in_pooling: false
+  boundary_rows_masked_in_temporal_encoder_and_pooling: 3

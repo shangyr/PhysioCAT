@@ -1,0 +1,7 @@
+analysis_view,minimum_modality_sqi,maximum_modality_sqi,subject_cap,subjects,windows,evaluation_model,sbp_mae,dbp_mae
+Basic paired/target validity; no SQI threshold,,,96,2714,207568,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.311374,3.163597
+Relaxed joint SQI (min 0.30; max 0.45),0.300000,0.450000,96,2714,200124,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.289549,3.137253
+Default joint SQI (min 0.40; max 0.55),0.400000,0.550000,96,2714,186252,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.263173,3.108044
+Stricter joint SQI (min 0.50; max 0.65),0.500000,0.650000,96,2682,157079,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.229749,3.049459
+Default joint SQI; 48-window cap,0.400000,0.550000,48,2714,124929,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.263671,3.110350
+Default joint SQI; no subject cap,0.400000,0.550000,none,2714,193533,frozen main PhysioCAT subject-grouped OOF model for each held-out fold,4.263611,3.106951

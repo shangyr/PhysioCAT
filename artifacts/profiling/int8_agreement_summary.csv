@@ -1,0 +1,2 @@
+profile_id,evaluation_windows,sbp_mae_fp16,sbp_mae_int8,dbp_mae_fp16,dbp_mae_int8,median_absolute_prediction_difference_sbp,median_absolute_prediction_difference_dbp
+orin_trt_int8,10000,4.458700,4.496100,3.207900,3.231800,0.071400,0.052700

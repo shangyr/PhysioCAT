@@ -1,0 +1,2 @@
+windows,subjects,consensus_usable_pct,dual_rater_observed_agreement,dual_rater_cohen_kappa,min_modality_sqi_auc,joint_rule_sensitivity,joint_rule_specificity,sampling,blinding
+1200,968,89.166667,0.931667,0.660033,0.986456,0.946729,0.861538,fixed-seed equal allocation across min-SQI deciles,"BP labels, ABP, model predictions, and downstream errors hidden"

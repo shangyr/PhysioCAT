@@ -1,0 +1,28 @@
+kind: evaluation
+split: frozen_source_to_target_zero_shot
+source_training_seeds:
+- 42
+- 1337
+- 2025
+primary_source_seed: 42
+metrics:
+- MAE
+- ME
+- SDE
+- Pearson_r
+weighting:
+- window
+- subject
+bootstrap:
+  cluster: target_subject
+  reps: 2000
+  seed: 42
+  interval: percentile_95
+paired_test:
+  unit: target_subject
+  test: two_sided_Wilcoxon_signed_rank
+  multiplicity: single_Holm_family_across_22_reported_tests
+cohort_relation: PulseDB-MIMIC and MIMIC-BP are patient-disjoint, separately curated
+  MIMIC-III-derived target protocols within one waveform ecosystem; they are not independent
+  clinical sites
+mimic_bp_view: single_fixed_external_cohort

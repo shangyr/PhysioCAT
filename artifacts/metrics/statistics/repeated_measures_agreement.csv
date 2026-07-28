@@ -1,0 +1,3 @@
+outcome,n_subjects,n_windows,mean_error,within_subject_variance,between_subject_variance,icc_residual,repeated_measure_loa_low,repeated_measure_loa_high
+SBP,2714,186252,0.165029,28.527528,1.511887,0.050330,-10.577383,10.907441
+DBP,2714,186252,0.163813,15.112459,0.678269,0.042954,-7.624747,7.952372

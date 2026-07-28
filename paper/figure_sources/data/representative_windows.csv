@@ -1,0 +1,3 @@
+role,window_id,subject_id,sbp_mae,dbp_mae,min_sqi,rhythm_group,reference_sbp,reference_dbp,selection_rule,waveform_asset,waveform_row,waveform_sha256
+easier,pulsedb_vital-W0189999,PULSEDB_VITAL-S02292,4.756610,1.464467,0.857238,Regular,143.112353,80.146909,high-SQI regular-rhythm pool; nearest combined-error median,artifacts/waveforms/representative_windows.npz,0,d5a41d22e1d5469a25ec525a56d7619745b72a6d12027ca412d824c1ade076af
+harder,pulsedb_vital-W0082194,PULSEDB_VITAL-S00993,8.106228,6.083422,0.642360,RR-irregular,136.038090,81.776937,low-SQI RR-irregular pool; nearest combined-error 90th percentile,artifacts/waveforms/representative_windows.npz,1,d5a41d22e1d5469a25ec525a56d7619745b72a6d12027ca412d824c1ade076af

@@ -1,0 +1,5 @@
+control_family,variant,model,sbp_mae,dbp_mae,n_windows,n_subjects,evaluation_scope
+Normalization,Delay band + whole-window robust normalization,physiocat,4.263173,3.108044,186252,2714,complete five-fold subject-grouped OOF
+Normalization,No-delay + whole-window robust normalization,matched_no_delay,5.250650,3.512501,186252,2714,complete five-fold subject-grouped OOF
+Normalization,Delay band + patch-local normalization,physiocat_patch_local,4.449145,3.230984,186252,2714,complete five-fold subject-grouped OOF
+Normalization,No-delay + patch-local normalization,matched_no_delay_patch_local,5.401045,3.593315,186252,2714,complete five-fold subject-grouped OOF

@@ -1,0 +1,3 @@
+outcome,n_windows,calibration_intercept_mmHg,calibration_slope,residual_reference_r,lowest_reference_quartile_mean_error_mmHg,highest_reference_quartile_mean_error_mmHg
+SBP,186252,6.404953,0.950701,-0.129638,1.053542,-0.732549
+DBP,186252,3.604724,0.950158,-0.115642,0.701030,-0.441509

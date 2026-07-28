@@ -1,0 +1,9 @@
+cohort,stage,windows_remaining,subjects_remaining,fraction_of_enumerated
+pulsedb_mimic,Source-indexed adult waveform segments,211414,2201,1.000000
+pulsedb_mimic,Paired ECG/PPG crop available,206873,2201,0.978521
+pulsedb_mimic,Scalar target formed or paired,198800,2201,0.940335
+pulsedb_mimic,At least six cardiac cycles,196415,2201,0.929054
+pulsedb_mimic,ECG channel quality,188660,2201,0.892372
+pulsedb_mimic,PPG channel quality,179128,2201,0.847285
+pulsedb_mimic,Common paired-sample continuity,177119,2201,0.837783
+pulsedb_mimic,Joint ECG/PPG SQI rule,164882,2201,0.779901

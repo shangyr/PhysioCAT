@@ -1,0 +1,55 @@
+kind: preprocessing
+sample_rate_hz: 250
+window_seconds: 8
+filters:
+  scope: analysis_branch_only
+  ecg_hz:
+  - 0.5
+  - 40.0
+  ppg_hz:
+  - 0.4
+  - 12.0
+  abp_hz:
+  - 0.4
+  - 20.0
+  order: 4
+  zero_phase: true
+model_input_views:
+  window_robust:
+    models: all main models and comparators
+    scope: complete shared crop
+    centering: window_median
+    scaling: window_interquartile_range
+    preserves_cross_patch_morphology: true
+  patch_local:
+    models: normalization sensitivity controls only
+    scope: independent_nonoverlapping_patches
+    patch_samples: 16
+    centering: patch_median
+    scaling: patch_interquartile_range
+  fitted_statistics: false
+paired_streams:
+  method: source_index_then_shared_crop_and_finite_sample_continuity
+  one_source_record_at_most_one_crop: true
+  source_enumeration_precedes_target_formation: true
+  time_shift_signals: false
+  waveform_cross_correlation_used_for_retention: false
+  pat_used_for_retention: false
+beats:
+  minimum_cycles: 6
+  ecg_detector: derivative_energy_refractory
+  ppg_foot: trough_to_sustained_upstroke
+target_derivation:
+  pulsedb: mean accepted ABP beat maxima/minima in the aligned 8-s crop
+  mimic_bp: curated scalar labels paired with the released 8-s record
+  abp_quality_used_for_retention: false
+  reference_abp_sqi_threshold: 0.42
+  reference_abp_sqi_role: label-source sensitivity only
+sqi:
+  ecg_min: 0.4
+  ppg_min: 0.4
+  ppg_components:
+  - pulse_band_spectral_concentration
+  - robust_slope_balance
+  amplitude_scale_invariant: true
+  joint_rule: min(ecg,ppg)>=0.40 and max(ecg,ppg)>=0.55

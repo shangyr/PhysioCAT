@@ -1,0 +1,15 @@
+{
+  "folds": 5,
+  "role_encoding": {
+    "0": "training",
+    "1": "validation",
+    "2": "test"
+  },
+  "outer_test_rule": "five fixed subject-grouped folds stratified by subject-level SBP, DBP, and sex summaries; every subject is tested exactly once",
+  "outer_split_seed": 42,
+  "validation_rule": "271 subjects sampled with a fold-specific fixed seed from the four non-test outer groups",
+  "validation_subjects_per_fold": 271,
+  "validation_seed_rule": "42000 + fold_id",
+  "training_rule": "all subjects not assigned to validation or outer test",
+  "selection_used_model_predictions": false
+}

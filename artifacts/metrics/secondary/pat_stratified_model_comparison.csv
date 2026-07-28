@@ -1,0 +1,81 @@
+group_type,pat_group,model,display_name,outcome,subjects,windows,mae,mae_reduction_vs_physiocat,subject_paired_ci_low,subject_paired_ci_high,rank_biserial_effect,bootstrap_reps
+primary,PAT detected: 120--450 ms,physiocat,PhysioCAT,SBP,2714,173379,4.213617,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT detected: 120--450 ms,matched_no_delay,Matched no-delay,SBP,2714,173379,5.226859,1.013243,0.985650,1.096541,0.684368,2000
+primary,PAT detected: 120--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2714,173379,4.783003,0.569386,0.537543,0.627539,0.499665,2000
+primary,PAT detected: 120--450 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,2714,173379,5.386969,1.173353,1.137595,1.250375,0.760036,2000
+primary,PAT detected: 120--450 ms,physiocat,PhysioCAT,DBP,2714,173379,3.069191,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT detected: 120--450 ms,matched_no_delay,Matched no-delay,DBP,2714,173379,3.496767,0.427576,0.403948,0.475594,0.492313,2000
+primary,PAT detected: 120--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2714,173379,3.425677,0.356485,0.329213,0.382946,0.517470,2000
+primary,PAT detected: 120--450 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,2714,173379,3.528032,0.458840,0.428418,0.500563,0.516755,2000
+primary,PAT detected: outside 120--450 ms,physiocat,PhysioCAT,SBP,2167,4864,4.452413,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT detected: outside 120--450 ms,matched_no_delay,Matched no-delay,SBP,2167,4864,5.236853,0.784441,0.653326,0.959726,0.248309,2000
+primary,PAT detected: outside 120--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2167,4864,4.940765,0.488352,0.348730,0.626433,0.164903,2000
+primary,PAT detected: outside 120--450 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,2167,4864,5.417554,0.965142,0.842956,1.144680,0.308381,2000
+primary,PAT detected: outside 120--450 ms,physiocat,PhysioCAT,DBP,2167,4864,3.318844,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT detected: outside 120--450 ms,matched_no_delay,Matched no-delay,DBP,2167,4864,3.580967,0.262122,0.142041,0.358853,0.091948,2000
+primary,PAT detected: outside 120--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2167,4864,3.547384,0.228539,0.103163,0.300052,0.104816,2000
+primary,PAT detected: outside 120--450 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,2167,4864,3.559112,0.240267,0.149871,0.344838,0.115268,2000
+primary,PAT not detected,physiocat,PhysioCAT,SBP,2512,8009,5.221044,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT not detected,matched_no_delay,Matched no-delay,SBP,2512,8009,5.774054,0.553010,0.395157,0.659750,0.169958,2000
+primary,PAT not detected,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2512,8009,5.627723,0.406680,0.263626,0.505177,0.143604,2000
+primary,PAT not detected,direction_agnostic_local,Zero-centered nonzero local,SBP,2512,8009,5.771498,0.550454,0.375344,0.649227,0.155156,2000
+primary,PAT not detected,physiocat,PhysioCAT,DBP,2512,8009,3.821112,0.000000,0.000000,0.000000,0.000000,2000
+primary,PAT not detected,matched_no_delay,Matched no-delay,DBP,2512,8009,3.811533,-0.009578,-0.056575,0.128762,-0.015011,2000
+primary,PAT not detected,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2512,8009,3.908966,0.087854,-0.000945,0.175619,0.057850,2000
+primary,PAT not detected,direction_agnostic_local,Zero-centered nonzero local,DBP,2512,8009,3.788387,-0.032724,-0.131320,0.056342,-0.028587,2000
+detailed,60--119 ms,physiocat,PhysioCAT,SBP,1668,2894,4.398972,0.000000,0.000000,0.000000,0.000000,2000
+detailed,60--119 ms,matched_no_delay,Matched no-delay,SBP,1668,2894,5.239150,0.840178,0.634562,1.003255,0.232147,2000
+detailed,60--119 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,1668,2894,4.897076,0.498104,0.263641,0.599173,0.134199,2000
+detailed,60--119 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,1668,2894,5.327054,0.928082,0.729052,1.095158,0.259948,2000
+detailed,60--119 ms,physiocat,PhysioCAT,DBP,1668,2894,3.305532,0.000000,0.000000,0.000000,0.000000,2000
+detailed,60--119 ms,matched_no_delay,Matched no-delay,DBP,1668,2894,3.560744,0.255212,0.115236,0.390394,0.074412,2000
+detailed,60--119 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,1668,2894,3.536433,0.230901,0.064923,0.300770,0.083846,2000
+detailed,60--119 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,1668,2894,3.573714,0.268182,0.147261,0.402596,0.113776,2000
+detailed,120--199 ms,physiocat,PhysioCAT,SBP,2645,18259,4.203291,0.000000,0.000000,0.000000,0.000000,2000
+detailed,120--199 ms,matched_no_delay,Matched no-delay,SBP,2645,18259,5.200845,0.997555,0.920355,1.106753,0.473678,2000
+detailed,120--199 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2645,18259,4.749883,0.546592,0.506304,0.668222,0.307824,2000
+detailed,120--199 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,2645,18259,5.324415,1.121125,1.068766,1.255941,0.520156,2000
+detailed,120--199 ms,physiocat,PhysioCAT,DBP,2645,18259,3.088111,0.000000,0.000000,0.000000,0.000000,2000
+detailed,120--199 ms,matched_no_delay,Matched no-delay,DBP,2645,18259,3.519301,0.431190,0.349329,0.482596,0.286620,2000
+detailed,120--199 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2645,18259,3.442828,0.354717,0.288135,0.407267,0.286114,2000
+detailed,120--199 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,2645,18259,3.515092,0.426981,0.352156,0.483305,0.296944,2000
+detailed,200--299 ms,physiocat,PhysioCAT,SBP,2713,93778,4.214513,0.000000,0.000000,0.000000,0.000000,2000
+detailed,200--299 ms,matched_no_delay,Matched no-delay,SBP,2713,93778,5.233922,1.019409,0.994438,1.115548,0.659277,2000
+detailed,200--299 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2713,93778,4.781425,0.566912,0.530184,0.628672,0.464932,2000
+detailed,200--299 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,2713,93778,5.377538,1.163025,1.149215,1.267643,0.735349,2000
+detailed,200--299 ms,physiocat,PhysioCAT,DBP,2713,93778,3.063795,0.000000,0.000000,0.000000,0.000000,2000
+detailed,200--299 ms,matched_no_delay,Matched no-delay,DBP,2713,93778,3.490699,0.426904,0.407950,0.482591,0.471251,2000
+detailed,200--299 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2713,93778,3.417741,0.353946,0.322574,0.385976,0.471678,2000
+detailed,200--299 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,2713,93778,3.526804,0.463009,0.422999,0.499362,0.478931,2000
+detailed,300--399 ms,physiocat,PhysioCAT,SBP,2703,56993,4.213205,0.000000,0.000000,0.000000,0.000000,2000
+detailed,300--399 ms,matched_no_delay,Matched no-delay,SBP,2703,56993,5.219165,1.005960,0.970568,1.105051,0.610266,2000
+detailed,300--399 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2703,56993,4.794188,0.580983,0.547198,0.658009,0.455367,2000
+detailed,300--399 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,2703,56993,5.410882,1.197677,1.133982,1.265464,0.696282,2000
+detailed,300--399 ms,physiocat,PhysioCAT,DBP,2703,56993,3.074098,0.000000,0.000000,0.000000,0.000000,2000
+detailed,300--399 ms,matched_no_delay,Matched no-delay,DBP,2703,56993,3.504300,0.430202,0.382468,0.467540,0.416462,2000
+detailed,300--399 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2703,56993,3.433870,0.359772,0.323358,0.394578,0.436447,2000
+detailed,300--399 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,2703,56993,3.538373,0.464275,0.439445,0.524083,0.462529,2000
+detailed,400--450 ms,physiocat,PhysioCAT,SBP,1984,4349,4.243036,0.000000,0.000000,0.000000,0.000000,2000
+detailed,400--450 ms,matched_no_delay,Matched no-delay,SBP,1984,4349,5.284630,1.041594,0.913414,1.248386,0.320173,2000
+detailed,400--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,1984,4349,4.809515,0.566479,0.436852,0.705831,0.215924,2000
+detailed,400--450 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,1984,4349,5.539613,1.296577,1.083760,1.391762,0.401941,2000
+detailed,400--450 ms,physiocat,PhysioCAT,DBP,1984,4349,3.041809,0.000000,0.000000,0.000000,0.000000,2000
+detailed,400--450 ms,matched_no_delay,Matched no-delay,DBP,1984,4349,3.434285,0.392476,0.272854,0.493749,0.168523,2000
+detailed,400--450 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,1984,4349,3.417403,0.375594,0.321067,0.522655,0.203773,2000
+detailed,400--450 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,1984,4349,3.473297,0.431488,0.305239,0.516188,0.181325,2000
+detailed,451--650 ms,physiocat,PhysioCAT,SBP,1326,1970,4.530919,0.000000,0.000000,0.000000,0.000000,2000
+detailed,451--650 ms,matched_no_delay,Matched no-delay,SBP,1326,1970,5.233480,0.702561,0.575546,1.023820,0.205184,2000
+detailed,451--650 ms,ppg_leading_mirror,PPG-leading mirror delay band,SBP,1326,1970,5.004946,0.474027,0.277296,0.671524,0.161501,2000
+detailed,451--650 ms,direction_agnostic_local,Zero-centered nonzero local,SBP,1326,1970,5.550502,1.019584,0.806182,1.248578,0.261823,2000
+detailed,451--650 ms,physiocat,PhysioCAT,DBP,1326,1970,3.338400,0.000000,0.000000,0.000000,0.000000,2000
+detailed,451--650 ms,matched_no_delay,Matched no-delay,DBP,1326,1970,3.610674,0.272274,0.110541,0.410222,0.089490,2000
+detailed,451--650 ms,ppg_leading_mirror,PPG-leading mirror delay band,DBP,1326,1970,3.563470,0.225070,0.026220,0.322445,0.077299,2000
+detailed,451--650 ms,direction_agnostic_local,Zero-centered nonzero local,DBP,1326,1970,3.537660,0.199260,0.033326,0.323930,0.059080,2000
+detailed,PAT not detected,physiocat,PhysioCAT,SBP,2512,8009,5.221044,0.000000,0.000000,0.000000,0.000000,2000
+detailed,PAT not detected,matched_no_delay,Matched no-delay,SBP,2512,8009,5.774054,0.553010,0.387755,0.653486,0.169958,2000
+detailed,PAT not detected,ppg_leading_mirror,PPG-leading mirror delay band,SBP,2512,8009,5.627723,0.406680,0.257772,0.503900,0.143604,2000
+detailed,PAT not detected,direction_agnostic_local,Zero-centered nonzero local,SBP,2512,8009,5.771498,0.550454,0.375804,0.647754,0.155156,2000
+detailed,PAT not detected,physiocat,PhysioCAT,DBP,2512,8009,3.821112,0.000000,0.000000,0.000000,0.000000,2000
+detailed,PAT not detected,matched_no_delay,Matched no-delay,DBP,2512,8009,3.811533,-0.009578,-0.072408,0.137812,-0.015011,2000
+detailed,PAT not detected,ppg_leading_mirror,PPG-leading mirror delay band,DBP,2512,8009,3.908966,0.087854,-0.006821,0.173293,0.057850,2000
+detailed,PAT not detected,direction_agnostic_local,Zero-centered nonzero local,DBP,2512,8009,3.788387,-0.032724,-0.135597,0.055574,-0.028587,2000

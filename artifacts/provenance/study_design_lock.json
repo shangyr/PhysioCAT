@@ -1,0 +1,30 @@
+{
+  "design_lock_id": "physiocat-primary-design-lock-v1",
+  "registration_status": "internal frozen analysis specification; not externally preregistered",
+  "locked_utc": "2026-03-10T12:00:00Z",
+  "final_training_campaign_started_utc": "2026-03-18T00:00:00Z",
+  "primary_comparison": "PhysioCAT versus the parameter-matched no-delay-band control",
+  "default_delay_band_ms": [
+    120,
+    450
+  ],
+  "analysis_grid_hz": 250,
+  "patch_samples": 16,
+  "patch_duration_ms": 64,
+  "sqi_retention_thresholds": {
+    "minimum_both": 0.4,
+    "minimum_one": 0.55
+  },
+  "input_views": {
+    "main_models_and_comparators": "window_robust",
+    "normalization_factorial_controls": [
+      "window_robust",
+      "patch_local"
+    ]
+  },
+  "configuration_registry_sha256": "dff8a4bf86c37ddaaaba2b4bd61ee69a05efe60033d8c7fd5c4835dfa1704dc2",
+  "code_snapshot_sha256": "79d92fab03147a27baeb3dc757aadce0acbdacfdb7542518935f32d1ca2986a1",
+  "outer_test_use": "outer-test predictions were materialized only after this design lock; fold-local validation selected checkpoints",
+  "baseline_scope": "published comparators are architecture-aligned common-protocol implementations; official-code equivalence is not claimed",
+  "design_lock_sha256": "ab2f44c887cab143b8df4fe0a2e458822ea38f69da23fe238f2fc3e24235773c"
+}

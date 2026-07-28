@@ -1,0 +1,5 @@
+me,mae,sde,rmse,pearson_r,within_5_pct,within_10_pct,within_15_pct,cohort,model,display_name,outcome,n_windows,n_subjects
+0.176603,2.231667,2.886268,2.891658,0.979799,91.705324,99.678930,99.985504,pulsedb_vital_random_segment_split,random_split_physiocat,"PhysioCAT, subject-overlapping random segment split",SBP,186252,2714
+0.168671,1.737091,2.220992,2.227382,0.970625,97.049696,99.966175,100.000000,pulsedb_vital_random_segment_split,random_split_physiocat,"PhysioCAT, subject-overlapping random segment split",DBP,186252,2714
+0.152160,3.222863,4.200541,4.203285,0.957556,79.129889,97.448618,99.691278,pulsedb_vital_random_segment_split,random_split_matched_no_delay,"Matched no-delay, subject-overlapping random segment split",SBP,186252,2714
+0.083979,2.022999,2.617798,2.619138,0.958895,94.036574,99.836243,99.995168,pulsedb_vital_random_segment_split,random_split_matched_no_delay,"Matched no-delay, subject-overlapping random segment split",DBP,186252,2714

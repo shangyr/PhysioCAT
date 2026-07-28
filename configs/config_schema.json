@@ -1,0 +1,89 @@
+{
+  "kinds": {
+    "defaults": {
+      "required": [
+        "version",
+        "sampling.sample_rate_hz",
+        "sampling.window_seconds",
+        "reproducibility.master_seed",
+        "paths.predictions"
+      ]
+    },
+    "cohort": {
+      "required": [
+        "name",
+        "role",
+        "identity.split_unit",
+        "retention.required_checks",
+        "pat_audit.detection_range_ms",
+        "pat_audit.used_for_retention"
+      ]
+    },
+    "preprocessing": {
+      "required": [
+        "sample_rate_hz",
+        "window_seconds",
+        "filters.ecg_hz",
+        "filters.ppg_hz",
+        "paired_streams.method",
+        "sqi.joint_rule"
+      ]
+    },
+    "model": {
+      "required": [
+        "name",
+        "inputs",
+        "architecture.hidden_dim",
+        "training.configuration_policy",
+        "output.targets"
+      ]
+    },
+    "training": {
+      "required": [
+        "optimizer.name",
+        "optimizer.learning_rate",
+        "early_stopping.metric",
+        "early_stopping.patience",
+        "seeds"
+      ]
+    },
+    "evaluation": {
+      "required": [
+        "split",
+        "metrics",
+        "bootstrap.cluster",
+        "bootstrap.reps",
+        "paired_test.multiplicity"
+      ]
+    },
+    "experiment": {
+      "required": [
+        "name",
+        "cohort_config",
+        "model_configs",
+        "evaluation_config",
+        "outputs"
+      ]
+    },
+    "hyperparameter_search": {
+      "required": []
+    },
+    "baseline_protocols": {
+      "required": []
+    },
+    "dataset_adapter": {
+      "required": [
+        "file_glob",
+        "source_sample_rate_hz",
+        "target_sample_rate_hz",
+        "window_seconds",
+        "target_policy",
+        "fields.ecg",
+        "fields.ppg",
+        "fields.abp",
+        "fields.subject_id",
+        "fields.record_id"
+      ]
+    }
+  }
+}
