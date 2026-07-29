@@ -2,6 +2,7 @@ from pathlib import Path
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 import tempfile
 import zipfile
@@ -570,6 +571,19 @@ def test_public_author_and_affiliation_metadata_are_consistent():
     assert r"\address[inst2]{Faculty of Computing, Harbin Institute of Technology, Harbin 150001, China}" in manuscript
     assert r"Youren Shang$^{1,2}$, Ningyuan Zhang$^{1,*}$" in supplement
     assert r"$^{2}$Faculty of Computing, Harbin Institute of Technology, Harbin 150001, China" in supplement
+
+
+def test_data_availability_uses_a_non_self_referential_release_identity():
+    manuscript = (ROOT / "paper/PhysioCAT_Manuscript.tex").read_text(encoding="utf-8")
+    versioning = (ROOT / "VERSIONING.md").read_text(encoding="utf-8")
+    assert "PhysioCAT v1.0.0" in manuscript
+    assert r"\texttt{bspc-submission-v1}" in manuscript
+    assert r"\url{https://github.com/shangyr/PhysioCAT/releases/tag/bspc-submission-v1}" in manuscript
+    assert "The Release records the target Git commit and provides the source archive" in manuscript
+    assert "recorded in the submission system" not in manuscript
+    assert "manuscript-management system" not in versioning
+    assert "outside the tracked source" in versioning
+    assert re.search(r"\b[0-9a-f]{40}\b", manuscript) is None
 
 
 def test_funding_and_non_author_pi_boundaries_are_explicit():
