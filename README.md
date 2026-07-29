@@ -8,7 +8,7 @@
 **Physiological delay-banded cross-attention for subject-independent cuffless
 blood pressure estimation from ECG and PPG**
 
-Youren Shang · Ningyuan Zhang (corresponding author) · Harbin Institute of Technology
+Youren Shang · Ningyuan Zhang — eHealth Research Institute, Harbin Institute of Technology
 
 PhysioCAT is a physiology-guided multimodal neural network that restricts
 direct ECG--PPG attention to the ECG-leading 120--450 ms pulse-arrival

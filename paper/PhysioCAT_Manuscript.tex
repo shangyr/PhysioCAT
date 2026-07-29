@@ -51,11 +51,12 @@
 
 \title{PhysioCAT: Physiological Delay-Banded Cross-Attention for Subject-Independent Cuffless Blood Pressure Estimation from ECG and PPG}
 
-\author[inst1]{Youren Shang}
+\author[inst1,inst2]{Youren Shang}
 \author[inst1]{Ningyuan Zhang\corref{cor1}}
 \ead{25b910030@stu.hit.edu.cn}
 \cortext[cor1]{Corresponding author: Ningyuan Zhang.}
 \address[inst1]{eHealth Research Institute, School of Management, Harbin Institute of Technology, Harbin 150001, China}
+\address[inst2]{Faculty of Computing, Harbin Institute of Technology, Harbin 150001, China}
 
 \begin{abstract}
 Subject-independent cuffless blood pressure (BP) estimation from electrocardiogram (ECG) and photoplethysmogram (PPG) seeks to infer BP in unseen individuals from noninvasive cardiovascular waveforms. ECG and peripheral PPG are temporally ordered signals, yet many fusion layers permit unconstrained cross-modal interactions that ignore the physiologically plausible delay between cardiac electrical activation and peripheral pulse arrival. We propose PhysioCAT, a model that encodes ECG-leading ordering and a plausible peripheral-pulse delay range as a delay-banded asymmetric cross-attention prior. Direct ECG--PPG attention is limited to ECG-leading patch pairs within a literature-guided 120--450 ms pulse-arrival envelope, while attention weights remain learnable inside that band. Evaluation used five-fold subject-grouped testing on 186{,}252 quality-controlled ECG--PPG windows from 2{,}714 PulseDB-Vital subjects, followed by frozen source-to-target transfer on two MIMIC-derived target protocols, PulseDB-MIMIC and MIMIC-BP. PhysioCAT achieved systolic and diastolic MAE of 4.26 and 3.11 mmHg, compared with 5.25 and 3.51 mmHg for a matched no-delay-band cross-attention control. Matched ablations, degree-preserving random rewiring, shifted-delay controls, direction controls, and timing perturbations were consistent with a contribution of the ECG-leading delay prior beyond generic attention capacity or sparse graph structure. These retrospective public-dataset results indicate that an ECG-leading delay-band prior can improve subject-independent ECG--PPG fusion.

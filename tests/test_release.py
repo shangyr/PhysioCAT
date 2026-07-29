@@ -551,9 +551,25 @@ def test_release_metadata_uses_current_version():
     assert "version: 1.0.0" in citation_text
     assert str(citation["version"]) == "1.0.0"
     assert str(citation["date-released"]) == "2026-07-29"
+    assert citation["authors"][0]["affiliation"] == "eHealth Research Institute, School of Management, Harbin Institute of Technology; Faculty of Computing, Harbin Institute of Technology"
+    assert citation["authors"][1]["affiliation"] == "eHealth Research Institute, School of Management, Harbin Institute of Technology"
     assert citation["authors"][1]["email"] == "25b910030@stu.hit.edu.cn"
     assert manifest["artifact_version"] == "1.0.0"
     assert manifest["review_snapshot_tag"] == "bspc-submission-v1"
+
+
+def test_public_author_and_affiliation_metadata_are_consistent():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    manuscript = (ROOT / "paper/PhysioCAT_Manuscript.tex").read_text(encoding="utf-8")
+    supplement = (ROOT / "paper/PhysioCAT_Supplementary_Material.tex").read_text(encoding="utf-8")
+    assert "Youren Shang · Ningyuan Zhang — eHealth Research Institute, Harbin Institute of Technology" in readme
+    assert "(corresponding author)" not in readme
+    assert r"\author[inst1,inst2]{Youren Shang}" in manuscript
+    assert r"\author[inst1]{Ningyuan Zhang\corref{cor1}}" in manuscript
+    assert r"\address[inst1]{eHealth Research Institute, School of Management, Harbin Institute of Technology, Harbin 150001, China}" in manuscript
+    assert r"\address[inst2]{Faculty of Computing, Harbin Institute of Technology, Harbin 150001, China}" in manuscript
+    assert r"Youren Shang$^{1,2}$, Ningyuan Zhang$^{1,*}$" in supplement
+    assert r"$^{2}$Faculty of Computing, Harbin Institute of Technology, Harbin 150001, China" in supplement
 
 
 def test_funding_and_non_author_pi_boundaries_are_explicit():
